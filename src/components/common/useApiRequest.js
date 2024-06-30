@@ -20,19 +20,20 @@ const useApiRequest = () => {
       // Prepare headers
       const defaultHeaders = {
         "Content-Type": "application/json",
-        Authorization: localStorage.getItem("token"),
-        "x-client-source": "web"
+        // Authorization: localStorage.getItem("token"),
+        "x-client-source": "web",
       };
       const finalHeaders = defaultHeader
         ? { ...defaultHeaders, ...headers }
         : headers;
-
+      console.log({ finalHeaders });
       const response = await axios({
         method,
         url,
         headers: finalHeaders,
         data,
         responseType: responseTypeBlod ? "blob" : "json",
+        withCredentials: true,
       });
 
       if (showNotification && response.data.message) {

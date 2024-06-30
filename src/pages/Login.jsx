@@ -1,8 +1,7 @@
-import React from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ROUTES } from "../utils/routes";
 import { Form, Input, Button, Card, Checkbox, Flex } from "antd";
-import { UserOutlined, LockOutlined } from "@ant-design/icons";
 import Logo from "../../public/logo.png";
 import useApiRequest from "../components/common/useApiRequest";
 import userStore from "../store/userStore";
@@ -11,6 +10,7 @@ const LoginForm = () => {
   const navigate = useNavigate();
   const { USER } = ROUTES;
   const { sendRequest } = useApiRequest();
+  const [loading, setLoading] = useState(false);
   const { setUser, setIsLoggedIn } = userStore();
   const onFinishFailed = (errorInfo) => {
     console.log("Failed:", errorInfo);
@@ -18,6 +18,7 @@ const LoginForm = () => {
   const onSubmit = async (data) => {
     console.log({ data });
     try {
+      setLoading(true);
       const user = await sendRequest({
         url: `${import.meta.env.VITE_BACKEND_URL}${USER.LOGIN}`,
         method: "POST",
@@ -34,12 +35,17 @@ const LoginForm = () => {
       }
     } catch (error) {
       console.error(error);
+    } finally {
+      setLoading(false);
     }
   };
   return (
     <Flex justify="center" align="center" style={{ height: "100vh" }}>
       <Card
+      style={{minWidth: "500xp"}}
+      loading={loading}
         title="Login Form"
+        styles={{minWidth: "300px"}}
         extra={
           <div>
             <img src={Logo} width={70} />

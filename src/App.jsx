@@ -5,11 +5,18 @@ import {
   UploadOutlined,
   UserOutlined,
   VideoCameraOutlined,
+  UsergroupAddOutlined,
+  UserSwitchOutlined,
+  ProfileFilled,
+  CarOutlined,
 } from "@ant-design/icons";
-import { Button, Drawer, Layout, Menu, theme } from "antd";
+import { Button, Drawer, Layout, Menu, notification, theme } from "antd";
 import "./App.css";
-import { Link } from "react-router-dom";
+import { Link, Outlet } from "react-router-dom";
 import Logo from "../public/logo.png";
+import { MESSAGE } from "./utils/helperConstant";
+import userStore from "./store/userStore";
+import CustomAvatar from "./components/common/avatar";
 
 const { Header, Sider, Content } = Layout;
 
@@ -27,28 +34,49 @@ function App({ children }) {
     }
   };
 
+  const menuItems = [
+    // {
+    //   key: "/create-user",
+    //   icon: <UsergroupAddOutlined />,
+    //   label: "User",
+    // },
+    {
+      key: "/create-user",
+      icon: <ProfileFilled />,
+      label: "Create User",
+    },
+    {
+      key: "/list-user",
+      icon: <UserSwitchOutlined />,
+      label: "List User",
+    },
+    {
+      key: "/create-vehicle",
+      icon: <CarOutlined />,
+      label: "Create Vehicle",
+    },
+  ].map((item) => ({
+    ...item,
+    label: <Link to={item.key}>{item.label}</Link>,
+    children: item.children
+      ? item.children
+          .filter((child) => child.visible !== false)
+          .map((child) => ({
+            ...child,
+            label: <Link to={child.key}>{child.label}</Link>,
+          }))
+      : undefined,
+  }));
+
   const renderMenu = (
     <Menu
       theme="dark"
       mode="inline"
       defaultSelectedKeys={["1"]}
-      items={[
-        {
-          key: "1",
-          icon: <UserOutlined />,
-          label: "nav 1",
-        },
-        {
-          key: "2",
-          icon: <VideoCameraOutlined />,
-          label: "nav 2",
-        },
-        {
-          key: "3",
-          icon: <UploadOutlined />,
-          label: "nav 3",
-        },
-      ]}
+      items={menuItems.map((item) => ({
+        ...item,
+        label: <Link to={item.key}>{item.label}</Link>,
+      }))}
     />
   );
   return (
@@ -89,6 +117,7 @@ function App({ children }) {
               collapsed ? MenuUnfoldOutlined : MenuFoldOutlined
             )}
           </Button>
+          <CustomAvatar />
         </Header>
 
         <Content
@@ -98,6 +127,7 @@ function App({ children }) {
           {children}
         </Content>
       </Layout>
+      <Outlet />
     </Layout>
   );
 }
