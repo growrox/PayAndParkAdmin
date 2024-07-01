@@ -6,9 +6,9 @@ export const ROUTES = {
   },
   VEHICLE_TYPE: {
     CREATE: "/api/v1/create-vehicle-type",
-    GET_DETAIL: "/api/v1/get-vehicle-type/:id",
+    GET_DETAIL: "/api/v1/get-vehicle-type",
     GET_ALL: "/api/v1/get-all-vehicle-type",
-    UPDATE: "/api/v1/update-vehicle-type/:id",
-    DELETE: "/api/v1/delete-vehicle-type/:id",
+    UPDATE: "/api/v1/update-vehicle-type",
+    DELETE: "/api/v1/delete-vehicle-type",
   },
 };

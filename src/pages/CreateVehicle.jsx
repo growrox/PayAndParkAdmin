@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Form, Input, Button, Upload, message, Space, Card } from "antd";
 import {
   InboxOutlined,
@@ -6,46 +6,54 @@ import {
   PlusOutlined,
 } from "@ant-design/icons";
 import axios from "axios";
-import { Outlet } from "react-router-dom";
+import { Outlet, useParams } from "react-router-dom";
 import { ROUTES } from "../utils/routes";
 import useApiRequest from "../components/common/useApiRequest";
+import userStore from "../store/userStore";
 
 const { Dragger } = Upload;
 
 const CreateVehicleType = () => {
+  const { id } = useParams();
   const [form] = Form.useForm();
   const { VEHICLE_TYPE } = ROUTES;
   const { sendRequest } = useApiRequest();
-
+  const { user } = userStore();
   const onSubmit = async (values) => {
     try {
-      console.log({ values });
       const formData = new FormData();
       formData.append("name", values.name);
       formData.append("hourlyPrices", JSON.stringify(values.hourlyPrices));
       if (values.image && values.image[0]) {
         formData.append("image", values.image[0].originFileObj);
       }
-      // Debugging: Log out formData contents
-      for (let [key, value] of formData.entries()) {
-        console.log(key, value); // This will show each key and value in formData
+      if (id) {
+        await sendRequest({
+          url: `${import.meta.env.VITE_BACKEND_URL}${
+            VEHICLE_TYPE.UPDATE
+          }/${id}`,
+          method: "PUT",
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+          showNotification: true,
+          data: formData,
+        });
+        getVehicleDetail();
+      } else {
+        await sendRequest({
+          url: `${import.meta.env.VITE_BACKEND_URL}${VEHICLE_TYPE.CREATE}`,
+          method: "POST",
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+          showNotification: true,
+          data: formData,
+        });
+        form.resetFields();
       }
-
-      const response = await sendRequest({
-        url: `${import.meta.env.VITE_BACKEND_URL}${VEHICLE_TYPE.CREATE}`,
-        method: "POST",
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-        showNotification: true,
-        data: formData,
-      });
-      console.log({ response });
-      message.success("Vehicle type created successfully");
-      form.resetFields();
     } catch (error) {
       console.log({ error });
-      message.error("Failed to create vehicle type");
     }
   };
   const normFile = (e) => {
@@ -54,6 +62,41 @@ const CreateVehicleType = () => {
     }
     return e?.fileList.slice(-1); // Take the last file to ensure only one file is processed
   };
+  const getVehicleDetail = async () => {
+    try {
+      const response = await sendRequest({
+        url: `${import.meta.env.VITE_BACKEND_URL}${
+          VEHICLE_TYPE.GET_DETAIL
+        }/${id}`,
+        method: "GET",
+        showNotification: false,
+      });
+      form.setFieldsValue({
+        name: response.name,
+        hourlyPrices: response.hourlyPrices,
+      });
+      if (response.image) {
+        form.setFieldsValue({
+          image: [
+            {
+              uid: "-1", // Negative id to avoid conflicts
+              name: "image.png", // Name can be extracted from URL
+              status: "done",
+              url: response.image, // Full URL or a path from API
+            },
+          ],
+        });
+      }
+    } catch (error) {
+      console.log({ error });
+      message.error("Failed to create vehicle type");
+    }
+  };
+  useEffect(() => {
+    if (id) {
+      getVehicleDetail();
+    }
+  }, [id]);
   return (
     <>
       <Card title="Create Vehicle">
@@ -150,7 +193,7 @@ const CreateVehicleType = () => {
           </Form.Item>
           <Form.Item>
             <Button type="primary" htmlType="submit">
-              Create Vehicle Type
+              {id ? "Update Vehicle" : "Create Vehicle"}
             </Button>
           </Form.Item>
         </Form>

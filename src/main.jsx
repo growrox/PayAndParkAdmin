@@ -9,6 +9,7 @@ import {
   UserForm,
   UserList,
   CreateVehicle,
+  GetVehicle,
 } from "./pages/index.js";
 import ErrorBoundary from "antd/es/alert/ErrorBoundary";
 import Loader from "./components/common/loader.jsx";
@@ -48,6 +49,22 @@ ReactDOM.createRoot(document.getElementById("root")).render(
               element={
                 <App>
                   <CreateVehicle />
+                </App>
+              }
+            />
+            <Route
+              path="/edit-vehicle/:id"
+              element={
+                <App>
+                  <CreateVehicle />
+                </App>
+              }
+            />
+            <Route
+              path="/vehicle-list"
+              element={
+                <App>
+                  <GetVehicle />
                 </App>
               }
             />

@@ -2,10 +2,12 @@ import { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router";
 import { notification } from "antd";
+import userStore from "../../store/userStore";
 
 const useApiRequest = () => {
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
+  const { user } = userStore();
   const sendRequest = async ({
     url,
     method = "get",
@@ -22,6 +24,7 @@ const useApiRequest = () => {
         "Content-Type": "application/json",
         // Authorization: localStorage.getItem("token"),
         "x-client-source": "web",
+        userId: user._id,
       };
       const finalHeaders = defaultHeader
         ? { ...defaultHeaders, ...headers }
