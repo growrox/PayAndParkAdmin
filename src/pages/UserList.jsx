@@ -1,23 +1,26 @@
 import React, { useState, useEffect } from "react";
-import { Card, Table, Pagination, Button, Input, Select } from "antd";
-import { Link, Outlet, useNavigate } from "react-router-dom";
+import { Card, Table, Pagination, Button, Input, Select, Space } from "antd";
+import { Outlet } from "react-router-dom";
 import { EyeOutlined } from "@ant-design/icons";
 import useApiRequest from "../components/common/useApiRequest";
 import { ROUTES } from "../utils/routes";
+import UpdateUserModal from "../components/userUpdate";
 
 const { Search } = Input;
 const { Option } = Select;
 
 const GetUser = () => {
   const { sendRequest } = useApiRequest();
-  const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
   const [userList, setUserList] = useState([]);
   const [searchText, setSearchText] = useState("");
   const [selectedRole, setSelectedRole] = useState("");
-
+  const [user, setUser] = useState({});
+  const [shifts, setShifts] = useState([]);
+  const [visible, setVisible] = useState(false);
   const {
     USER: { GET_ALL },
+    SHIFT: { GET },
   } = ROUTES;
 
   const [pagination, setPagination] = useState({
@@ -42,6 +45,7 @@ const GetUser = () => {
       const userList = users.map((user, index) => {
         return {
           serial: (page - 1) * pageSize + index + 1,
+          shift: user?.shiftId?.name,
           ...user,
         };
       });
@@ -60,9 +64,26 @@ const GetUser = () => {
       setIsLoading(false);
     }
   };
+  const getShiftList = async () => {
+    try {
+      setIsLoading(true);
+      const response = await sendRequest({
+        url: `${import.meta.env.VITE_BACKEND_URL}${GET}`,
+        method: "GET",
+        showNotification: false,
+      });
+      setShifts(response);
+    } catch (error) {
+      setShifts([]);
+      console.error(error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   useEffect(() => {
     getUserList(pagination.current, pagination.pageSize);
+    getShiftList();
   }, [pagination.current, pagination.pageSize, searchText, selectedRole]);
 
   const handlePageChange = (page, size) => {
@@ -110,22 +131,39 @@ const GetUser = () => {
       width: 100,
     },
     {
+      title: "Supervisor Code",
+      dataIndex: "supervisorCode", // Check if this should be "name"
+      key: "supervisorCode", // Matching with the key in the data object
+      width: 100,
+    },
+    {
       title: "Role",
       dataIndex: "role",
       key: "role",
       width: 100,
     },
     {
+      title: "Shit",
+      dataIndex: "shift",
+      key: "shift",
+      width: 100,
+    },
+    {
       title: "Actions",
       key: "actions",
-      render: (_, record) => (
-        <Link to={`/user/sales/${record._id}`}>
-          <EyeOutlined />
-        </Link>
+      render: (_) => (
+        <Space>
+          <EyeOutlined onClick={() => handleUserUpdateModal(_)} />
+        </Space>
       ),
       width: 60,
     },
   ];
+  const handleUserUpdateModal = (data) => {
+    console.log({ data });
+    setUser(data);
+    setVisible(true);
+  };
 
   return (
     <>
@@ -162,6 +200,16 @@ const GetUser = () => {
           onChange={handlePageChange}
           showSizeChanger={true}
           className="user-pagination"
+        />
+        <UpdateUserModal
+          visible={visible}
+          onCancel={(e) => {
+            console.log("click on cancel", e);
+            setVisible(false);
+          }}
+          user={user}
+          shifts={shifts}
+          getUserList={getUserList}
         />
       </Card>
       <Outlet />
