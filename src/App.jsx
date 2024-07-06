@@ -10,6 +10,7 @@ import {
   ProfileFilled,
   CarOutlined,
   TruckOutlined,
+  NodeExpandOutlined
 } from "@ant-design/icons";
 import { Button, Drawer, Layout, Menu, notification, theme } from "antd";
 import "./App.css";
@@ -60,6 +61,11 @@ function App({ children }) {
       key: "/vehicle-list",
       icon: <TruckOutlined />,
       label: "Vehicle List",
+    },
+    {
+      key: "/vehicle-pass",
+      icon: <NodeExpandOutlined />,
+      label: "Vehicle Pass",
     },
   ].map((item) => ({
     ...item,

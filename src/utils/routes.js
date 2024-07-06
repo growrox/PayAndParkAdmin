@@ -15,4 +15,9 @@ export const ROUTES = {
   SHIFT: {
     GET: "/api/v1/shifts/list",
   },
+  PASS: {
+    GET_ALL: "/api/v1/vehicle-passes",
+    UPDATE: "/api/v1/vehicle-passes",
+    CREATE: "/api/v1/vehicle-passes",
+  }
 };
