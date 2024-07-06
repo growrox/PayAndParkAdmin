@@ -29,7 +29,12 @@ const GetUser = () => {
     total: 0,
   });
 
-  const getUserList = async (page = 1, pageSize = 50) => {
+  const getUserList = async (
+    page = 1,
+    pageSize = 50,
+    searchText = "",
+    selectedRole = ""
+  ) => {
     try {
       setIsLoading(true);
       const {
@@ -82,9 +87,17 @@ const GetUser = () => {
   };
 
   useEffect(() => {
-    getUserList(pagination.current, pagination.pageSize);
+    getUserList(
+      pagination.current,
+      pagination.pageSize,
+      searchText,
+      selectedRole
+    );
     getShiftList();
   }, [pagination.current, pagination.pageSize, searchText, selectedRole]);
+  useEffect(() => {
+    getShiftList();
+  }, []);
 
   const handlePageChange = (page, size) => {
     setPagination({
@@ -96,12 +109,10 @@ const GetUser = () => {
 
   const handleSearch = (value) => {
     setSearchText(value);
-    getUserList(1, pagination.pageSize);
   };
 
   const handleRoleChange = (value) => {
     setSelectedRole(value);
-    getUserList(1, pagination.pageSize);
   };
 
   const columns = [

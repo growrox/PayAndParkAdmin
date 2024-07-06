@@ -74,19 +74,23 @@ const UpdateUserModal = ({ visible, onCancel, user, shifts, getUserList }) => {
         ) : (
           <></>
         )}
-        <Form.Item
-          name="shiftId"
-          label="Shift"
-          rules={[{ required: true, message: "Please select a shift!" }]}
-        >
-          <Select placeholder="Select a shift">
-            {shifts.map((shift) => (
-              <Option key={shift._id} value={shift._id}>
-                {shift.name}
-              </Option>
-            ))}
-          </Select>
-        </Form.Item>
+        {user.role === "assistant" ? (
+          <Form.Item
+            name="shiftId"
+            label="Shift"
+            rules={[{ required: true, message: "Please select a shift!" }]}
+          >
+            <Select placeholder="Select a shift">
+              {shifts.map((shift) => (
+                <Option key={shift._id} value={shift._id}>
+                  {shift.name}
+                </Option>
+              ))}
+            </Select>
+          </Form.Item>
+        ) : (
+          <></>
+        )}
       </Form>
     </Modal>
   );
