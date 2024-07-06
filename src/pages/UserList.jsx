@@ -1,5 +1,14 @@
 import React, { useState, useEffect } from "react";
-import { Card, Table, Pagination, Button, Input, Select, Space } from "antd";
+import {
+  Card,
+  Table,
+  Pagination,
+  Button,
+  Input,
+  Select,
+  Space,
+  Tag,
+} from "antd";
 import { Outlet } from "react-router-dom";
 import { EyeOutlined } from "@ant-design/icons";
 import useApiRequest from "../components/common/useApiRequest";
@@ -93,7 +102,6 @@ const GetUser = () => {
       searchText,
       selectedRole
     );
-    getShiftList();
   }, [pagination.current, pagination.pageSize, searchText, selectedRole]);
   useEffect(() => {
     getShiftList();
@@ -128,6 +136,27 @@ const GetUser = () => {
       dataIndex: "name", // Check if this should be "name"
       key: "name", // Matching with the key in the data object
       width: 100,
+    },
+    {
+      title: "Online/Offline",
+      dataIndex: "isOnline", // Check if this should be "name"
+      key: "isOnline", // Matching with the key in the data object
+      width: 100,
+      render: (isOnline, _) => (
+        <Space>
+          {_.role === "assistant" ? (
+            <>
+              {isOnline ? (
+                <Tag color="green">Online</Tag>
+              ) : (
+                <Tag color="red">Offline</Tag>
+              )}
+            </>
+          ) : (
+            <></>
+          )}
+        </Space>
+      ),
     },
     {
       title: "Contact No",

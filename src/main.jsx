@@ -16,74 +16,72 @@ import ErrorBoundary from "antd/es/alert/ErrorBoundary";
 import Loader from "./components/common/loader.jsx";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
-  <React.StrictMode>
-    <ErrorBoundary>
-      <Suspense fallback={<Loader />}>
-        <BrowserRouter>
-          <Routes>
-            <Route
-              path="/"
-              element={
-                <App>
-                  <Dashboard />
-                </App>
-              }
-            ></Route>
-            <Route
-              path="/create-user"
-              element={
-                <App>
-                  <UserForm />
-                </App>
-              }
-            />
-            <Route
-              path="/list-user"
-              element={
-                <App>
-                  <UserList />
-                </App>
-              }
-            />
-            <Route
-              path="/create-vehicle"
-              element={
-                <App>
-                  <CreateVehicle />
-                </App>
-              }
-            />
-            <Route
-              path="/edit-vehicle/:id"
-              element={
-                <App>
-                  <CreateVehicle />
-                </App>
-              }
-            />
-            <Route
-              path="/vehicle-list"
-              element={
-                <App>
-                  <GetVehicle />
-                </App>
-              }
-            />
-            <Route
-              path="/vehicle-pass"
-              element={
-                <App>
-                  <VehiclePass />
-                </App>
-              }
-            />
+  <ErrorBoundary>
+    <Suspense fallback={<Loader />}>
+      <BrowserRouter>
+        <Routes>
+          <Route
+            path="/"
+            element={
+              <App>
+                <Dashboard />
+              </App>
+            }
+          ></Route>
+          <Route
+            path="/create-user"
+            element={
+              <App>
+                <UserForm />
+              </App>
+            }
+          />
+          <Route
+            path="/list-user"
+            element={
+              <App>
+                <UserList />
+              </App>
+            }
+          />
+          <Route
+            path="/create-vehicle"
+            element={
+              <App>
+                <CreateVehicle />
+              </App>
+            }
+          />
+          <Route
+            path="/edit-vehicle/:id"
+            element={
+              <App>
+                <CreateVehicle />
+              </App>
+            }
+          />
+          <Route
+            path="/vehicle-list"
+            element={
+              <App>
+                <GetVehicle />
+              </App>
+            }
+          />
+          <Route
+            path="/vehicle-pass"
+            element={
+              <App>
+                <VehiclePass />
+              </App>
+            }
+          />
 
-            <Route path="/login" element={<Login />} />
+          <Route path="/login" element={<Login />} />
 
-            {/* Add more routes as needed */}
-          </Routes>
-        </BrowserRouter>
-      </Suspense>
-    </ErrorBoundary>
-  </React.StrictMode>
+          {/* Add more routes as needed */}
+        </Routes>
+      </BrowserRouter>
+    </Suspense>
+  </ErrorBoundary>
 );
