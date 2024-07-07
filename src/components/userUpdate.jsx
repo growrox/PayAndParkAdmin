@@ -15,8 +15,8 @@ const UpdateUserModal = ({ visible, onCancel, user, shifts, getUserList }) => {
     if (user && visible) {
       form.setFieldsValue({
         name: user.name,
-        supervisorCode: user.supervisorCode,
-        shiftId: user.shiftId._id,
+        supervisorCode: user?.supervisorCode,
+        shiftId: user?.shiftId?._id,
       });
     }
   }, [user, form, visible]);
