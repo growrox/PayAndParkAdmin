@@ -19,5 +19,9 @@ export const ROUTES = {
     GET_ALL: "/api/v1/vehicle-passes",
     UPDATE: "/api/v1/vehicle-passes",
     CREATE: "/api/v1/vehicle-passes",
+  },
+  TICKET: {
+    GET_ALL: "/api/v1/admin/parking-tickets",
+    GET_LOCATION: "/api/v1/parking-ticket/location"
   }
 };

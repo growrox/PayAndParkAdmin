@@ -5,7 +5,7 @@ import {
   UploadOutlined,
   UserOutlined,
   VideoCameraOutlined,
-  UsergroupAddOutlined,
+  ExceptionOutlined,
   UserSwitchOutlined,
   ProfileFilled,
   CarOutlined,
@@ -66,6 +66,11 @@ function App({ children }) {
       key: "/vehicle-pass",
       icon: <NodeExpandOutlined />,
       label: "Vehicle Pass",
+    },
+    {
+      key: "/tickets-list",
+      icon: <ExceptionOutlined />,
+      label: "Ticket Lists",
     },
   ].map((item) => ({
     ...item,
