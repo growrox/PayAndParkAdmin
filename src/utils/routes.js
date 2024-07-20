@@ -3,7 +3,7 @@ export const ROUTES = {
     SIGN_UP: "/api/v1/sign-up",
     LOGIN: "/api/v1/login",
     GET_ALL: "/api/v1/users",
-    UPDATE: "/api/v1/user"
+    UPDATE: "/api/v1/user",
   },
   VEHICLE_TYPE: {
     CREATE: "/api/v1/create-vehicle-type",
@@ -19,9 +19,10 @@ export const ROUTES = {
     GET_ALL: "/api/v1/vehicle-passes",
     UPDATE: "/api/v1/vehicle-passes",
     CREATE: "/api/v1/vehicle-passes",
+    DELETE: "/api/v1/vehicle-passes",
   },
   TICKET: {
     GET_ALL: "/api/v1/admin/parking-tickets",
-    GET_LOCATION: "/api/v1/parking-ticket/location"
-  }
+    GET_LOCATION: "/api/v1/parking-ticket/location",
+  },
 };

@@ -1,9 +1,28 @@
-import React, { useState, useEffect } from "react";
-import { Card, Table, Image, Flex, Popconfirm } from "antd";
-import { Link, Outlet } from "react-router-dom";
-import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
-import useApiRequest from "../components/common/useApiRequest";
-import { ROUTES } from "../utils/routes";
+import React, {
+  useEffect,
+  useState,
+} from 'react';
+
+import {
+  Card,
+  Flex,
+  Image,
+  message,
+  Popconfirm,
+  Table,
+} from 'antd';
+import {
+  Link,
+  Outlet,
+} from 'react-router-dom';
+
+import {
+  DeleteOutlined,
+  EditOutlined,
+} from '@ant-design/icons';
+
+import useApiRequest from '../components/common/useApiRequest';
+import { ROUTES } from '../utils/routes';
 
 const GetVehicle = () => {
   const { sendRequest } = useApiRequest();
@@ -136,7 +155,7 @@ const GetVehicle = () => {
   };
   return (
     <>
-      <Card title="Vehicle List">
+      <Card title="Vehicle List" loading={isLoading}>
         <Table
           columns={columns}
           dataSource={vehicleList}

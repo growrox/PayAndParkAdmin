@@ -1,20 +1,21 @@
-import React, { useState, useEffect } from "react";
-import axios from "axios";
+import React, { useEffect, useState } from "react";
+
 import {
-  Table,
   Button,
-  Modal,
+  Card,
+  DatePicker,
+  Flex,
   Form,
   Input,
-  DatePicker,
   message,
-  Flex,
+  Modal,
   Pagination,
-  Card,
+  Table,
 } from "antd";
-import { ROUTES } from "../utils/routes";
-import useApiRequest from "../components/common/useApiRequest";
 import dayjs from "dayjs";
+
+import useApiRequest from "../components/common/useApiRequest";
+import { ROUTES } from "../utils/routes";
 
 const { Search } = Input;
 
@@ -32,7 +33,7 @@ const VehiclePassManager = () => {
     total: 0,
   });
   const {
-    PASS: { GET_ALL, CREATE, UPDATE },
+    PASS: { GET_ALL, CREATE, UPDATE, DELETE },
   } = ROUTES;
   const { sendRequest } = useApiRequest();
   const fetchVehiclePasses = async () => {
@@ -45,13 +46,16 @@ const VehiclePassManager = () => {
         method: "GET",
         showNotification: false,
       });
-      const passList = passes.map((pass, index) => {
-        return {
-          serial: (pagination.current - 1) * pagination.pageSize + index + 1,
-          expireDate: dayjs(pass.expireDate).format("DD-MM-YYY"),
-          ...pass,
-        };
-      });
+      const passList = passes.map((pass, index) => ({
+        serial: (pagination.current - 1) * pagination.pageSize + index + 1,
+        ...pass,
+        passExpiryDate: pass.passExpiryDate
+          ? dayjs(pass.passExpiryDate).format("MMMM D, YYYY h:mm A")
+          : null,
+        insuranceExpiryDate: pass.insuranceExpiryDate
+          ? dayjs(pass.insuranceExpiryDate).format("MMMM D, YYYY h:mm A")
+          : null,
+      }));
       setVehiclePasses(passList);
       setPagination({
         ...pagination,
@@ -78,7 +82,8 @@ const VehiclePassManager = () => {
     if (pass) {
       form.setFieldsValue({
         ...pass,
-        expireDate: dayjs(pass.expireDate),
+        passExpiryDate: dayjs(pass.passExpiryDate),
+        insuranceExpiryDate: dayjs(pass.insuranceExpiryDate),
       });
     } else {
       form.resetFields();
@@ -97,15 +102,11 @@ const VehiclePassManager = () => {
       : `${import.meta.env.VITE_BACKEND_URL}${CREATE}`;
 
     try {
-      const data = {
-        ...values,
-        expireDate: values.expireDate.format("YYYY-MM-DD"),
-      };
       await sendRequest({
         url,
         method,
         showNotification: true,
-        data,
+        data: values,
       });
       fetchVehiclePasses();
       setIsModalVisible(false);
@@ -116,7 +117,14 @@ const VehiclePassManager = () => {
 
   const handleDelete = async (id) => {
     try {
+      console.log({ id });
       //   await axios.delete(`${backendUrl}/vehicle-pass/${id}`);
+      await sendRequest({
+        url: `${import.meta.env.VITE_BACKEND_URL}${DELETE}/${id}`,
+        method: "DELETE",
+        showNotification: true,
+        data: {},
+      });
       fetchVehiclePasses();
       message.success("Vehicle pass deleted successfully");
     } catch (error) {
@@ -132,7 +140,6 @@ const VehiclePassManager = () => {
     });
   };
   const handleSearch = (value) => {
-    console.log({ value });
     setSearchText(value);
     fetchVehiclePasses(value);
   };
@@ -153,21 +160,38 @@ const VehiclePassManager = () => {
             Create New Pass
           </Button>
         </Flex>
-        <Table dataSource={vehiclePasses} rowKey="_id" pagination={false}>
-          <Table.Column
-            title="Serial No"
-            dataIndex="serial"
-            key="serial"
-          />
-          <Table.Column
-            title="Vehicle Number"
-            dataIndex="vehicleNo"
-            key="vehicleNo"
-          />
+        <Table
+          dataSource={vehiclePasses}
+          rowKey="_id"
+          pagination={false}
+          loading={loading}
+        >
+          <Table.Column title="Serial No" dataIndex="serial" key="serial" />
           <Table.Column
             title="Expiration Date"
-            dataIndex="expireDate"
-            key="expireDate"
+            dataIndex="passExpiryDate"
+            key="passExpiryDate"
+          />
+
+          <Table.Column
+            title="Insurance Expiry Date"
+            dataIndex="insuranceExpiryDate"
+            key="insuranceExpiryDate"
+          />
+          <Table.Column
+            title="Vehicle Type"
+            dataIndex="vehicleType"
+            key="vehicleType"
+          />
+          <Table.Column
+            title="Vehicle Model"
+            dataIndex="vehicleModel"
+            key="vehicleModel"
+          />
+          <Table.Column
+            title="Vehicle Color"
+            dataIndex="vehicleColor"
+            key="vehicleColor"
           />
           <Table.Column title="Phone Number" dataIndex="phone" key="phone" />
           <Table.Column
@@ -204,6 +228,9 @@ const VehiclePassManager = () => {
         onOk={() => form.submit()}
       >
         <Form form={form} onFinish={handleFormSubmit} layout="vertical">
+          <Form.Item name="name" label="Name" rules={[{ required: true }]}>
+            <Input />
+          </Form.Item>
           <Form.Item
             name="vehicleNo"
             label="Vehicle Number"
@@ -212,6 +239,41 @@ const VehiclePassManager = () => {
             <Input />
           </Form.Item>
           <Form.Item
+            name="vehicleType"
+            label="Vehicle Type"
+            rules={[{ required: true }]}
+          >
+            <Input />
+          </Form.Item>
+          <Form.Item
+            name="vehicleModel"
+            label="Model"
+            rules={[{ required: true }]}
+          >
+            <Input />
+          </Form.Item>
+          <Form.Item
+            name="vehicleColor"
+            label="Color"
+            rules={[{ required: true }]}
+          >
+            <Input />
+          </Form.Item>
+          <Form.Item
+            name="insuranceExpiryDate"
+            label="Insurance Expiry Date"
+            rules={[{ required: true }]}
+          >
+            <DatePicker />
+          </Form.Item>
+          {/* <Form.Item
+            name="purchaseDate"
+            label="Purchase Date"
+            rules={[{ required: true }]}
+          >
+            <DatePicker />
+          </Form.Item> */}
+          <Form.Item
             name="phone"
             label="Phone Number"
             rules={[{ required: true, len: 10 }]}
@@ -219,7 +281,7 @@ const VehiclePassManager = () => {
             <Input maxLength={10} />
           </Form.Item>
           <Form.Item
-            name="expireDate"
+            name="passExpiryDate"
             label="Expiration Date"
             rules={[{ required: true }]}
           >

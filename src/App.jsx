@@ -1,23 +1,22 @@
+import "./App.css";
+
 import React, { useState } from "react";
+
+import { Button, Drawer, Layout, Menu, theme } from "antd";
+import { Link, Outlet } from "react-router-dom";
+
 import {
+  CarOutlined,
+  ExceptionOutlined,
   MenuFoldOutlined,
   MenuUnfoldOutlined,
-  UploadOutlined,
-  UserOutlined,
-  VideoCameraOutlined,
-  ExceptionOutlined,
-  UserSwitchOutlined,
+  NodeExpandOutlined,
   ProfileFilled,
-  CarOutlined,
   TruckOutlined,
-  NodeExpandOutlined
+  UserSwitchOutlined,
 } from "@ant-design/icons";
-import { Button, Drawer, Layout, Menu, notification, theme } from "antd";
-import "./App.css";
-import { Link, Outlet } from "react-router-dom";
+
 import Logo from "../public/logo.png";
-import { MESSAGE } from "./utils/helperConstant";
-import userStore from "./store/userStore";
 import CustomAvatar from "./components/common/avatar";
 
 const { Header, Sider, Content } = Layout;
@@ -90,6 +89,9 @@ function App({ children }) {
       theme="dark"
       mode="inline"
       defaultSelectedKeys={["1"]}
+      onClick={() => {
+        setVisible(false);
+      }}
       items={menuItems.map((item) => ({
         ...item,
         label: <Link to={item.key}>{item.label}</Link>,
