@@ -1,13 +1,15 @@
-import { useState } from "react";
-import axios from "axios";
-import { useNavigate } from "react-router";
-import { notification } from "antd";
-import userStore from "../../store/userStore";
+import { useState } from 'react';
+
+import { notification } from 'antd';
+import axios from 'axios';
+import { useNavigate } from 'react-router';
+
+import userStore from '../../store/userStore';
 
 const useApiRequest = () => {
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
-  const { user } = userStore();
+  const { user, setUser, setIsLoggedIn } = userStore();
   const sendRequest = async ({
     url,
     method = "get",
@@ -24,12 +26,11 @@ const useApiRequest = () => {
         "Content-Type": "application/json",
         // Authorization: localStorage.getItem("token"),
         "x-client-source": "web",
-        userId: user._id,
+        userId: user?._id,
       };
       const finalHeaders = defaultHeader
         ? { ...defaultHeaders, ...headers }
         : headers;
-      console.log({ finalHeaders });
       const response = await axios({
         method,
         url,
@@ -38,7 +39,6 @@ const useApiRequest = () => {
         responseType: responseTypeBlod ? "blob" : "json",
         withCredentials: true,
       });
-
       if (showNotification && response.data.message) {
         notification.success({ message: response.data.message });
       }
@@ -55,6 +55,7 @@ const useApiRequest = () => {
       if (showNotification && error.response?.data?.message) {
         notification.error({ message: error.response.data.message });
       }
+      console.error(error);
       return null; // Return null on error to handle it in the component where the hook is used.
     } finally {
       setIsLoading(false);

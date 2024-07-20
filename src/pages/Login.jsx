@@ -1,10 +1,18 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { ROUTES } from "../utils/routes";
-import { Form, Input, Button, Card, Checkbox, Flex } from "antd";
-import Logo from "../../public/logo.png";
-import useApiRequest from "../components/common/useApiRequest";
-import userStore from "../store/userStore";
+import React, { useState } from 'react';
+
+import {
+  Button,
+  Card,
+  Flex,
+  Form,
+  Input,
+} from 'antd';
+import { useNavigate } from 'react-router-dom';
+
+import Logo from '../../public/logo.png';
+import useApiRequest from '../components/common/useApiRequest';
+import userStore from '../store/userStore';
+import { ROUTES } from '../utils/routes';
 
 const LoginForm = () => {
   const navigate = useNavigate();
@@ -26,11 +34,10 @@ const LoginForm = () => {
         data,
       });
       if (user) {
-        console.log({ user });
         setUser(user);
         setIsLoggedIn(true);
         setTimeout(() => {
-          navigate("/");
+          navigate("/list-user");
         }, 1000);
       }
     } catch (error) {
@@ -42,10 +49,9 @@ const LoginForm = () => {
   return (
     <Flex justify="center" align="center" style={{ height: "100vh" }}>
       <Card
-      style={{minWidth: "500xp"}}
-      loading={loading}
+        style={{ minWidth: "500px" }}
+        loading={loading}
         title="Login Form"
-        styles={{minWidth: "300px"}}
         extra={
           <div>
             <img src={Logo} width={70} />
@@ -55,7 +61,7 @@ const LoginForm = () => {
         <Form
           name="basic"
           labelCol={{
-            span: 10,
+            span: 6,
           }}
           initialValues={{
             remember: true,
@@ -78,7 +84,7 @@ const LoginForm = () => {
           </Form.Item>
 
           <Form.Item
-            label="Password"
+            label="Your Password"
             name="password"
             rules={[
               {
@@ -90,7 +96,7 @@ const LoginForm = () => {
             <Input.Password />
           </Form.Item>
 
-          <Form.Item
+          {/* <Form.Item
             name="remember"
             valuePropName="checked"
             wrapperCol={{
@@ -99,7 +105,7 @@ const LoginForm = () => {
             }}
           >
             <Checkbox>Remember me</Checkbox>
-          </Form.Item>
+          </Form.Item> */}
 
           <Form.Item
             wrapperCol={{
