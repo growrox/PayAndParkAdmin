@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Card, Table, Pagination, Button, Input, Tag, Space } from "antd";
+import { Card, Table, Pagination, Button, Input, Tag, Space, message } from "antd";
 import { Outlet } from "react-router-dom";
 import useApiRequest from "../components/common/useApiRequest";
 import { ROUTES } from "../utils/routes";
@@ -49,13 +49,16 @@ const TicketList = () => {
 
   const getTicketLocation = async (ticket) => {
     setIsLoading(true);
-    let lat = 19.2856,
-      lon = 72.8691;
+    const {address: {latitude,longitude}} = ticket
     try {
+      if(!latitude || !longitude){
+        message.error("No Lattitude or Longitude");
+        throw new Error("No Lattitude or Longitude")
+      }
       const response = await sendRequest({
         url: `${
           import.meta.env.VITE_BACKEND_URL
-        }${GET_LOCATION}?lat=${lat}&lon=${lon}`,
+        }${GET_LOCATION}?lat=${latitude}&lon=${longitude}`,
         method: "GET",
         showNotification: false,
       });

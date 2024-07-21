@@ -25,4 +25,10 @@ export const ROUTES = {
     GET_ALL: "/api/v1/admin/parking-tickets",
     GET_LOCATION: "/api/v1/parking-ticket/location",
   },
+  SUPERVISOR: {
+    GET_SETTLED_TICKETS: "/api/v1/supervisor/tickets/all"
+  },
+  ACCOUNTANT: {
+    GET_SETTLED_TICKETS: "/api/v1/accountant/tickets/settled"
+  }
 };

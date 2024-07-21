@@ -9,7 +9,7 @@ import {
   Space,
   Tag,
 } from "antd";
-import { Outlet } from "react-router-dom";
+import { Outlet, useNavigate } from "react-router-dom";
 import { EyeOutlined } from "@ant-design/icons";
 import useApiRequest from "../components/common/useApiRequest";
 import { ROUTES } from "../utils/routes";
@@ -27,6 +27,7 @@ const GetUser = () => {
   const [user, setUser] = useState({});
   const [shifts, setShifts] = useState([]);
   const [visible, setVisible] = useState(false);
+  const navigate = useNavigate()
   const {
     USER: { GET_ALL },
     SHIFT: { GET },
@@ -132,6 +133,19 @@ const GetUser = () => {
       width: 70,
     },
     {
+      title: "Actions",
+      key: "actions",
+      render: (_) => (
+        <Space>
+          <EyeOutlined onClick={() => handleUserUpdateModal(_)} />
+            <Button onClick={() => navigate(`/supervisor/${_.name}/${_.role}/${_._id}`)}>
+             Settled Tickets
+            </Button>
+        </Space>
+      ),
+      width: 160,
+    },
+    {
       title: "Name",
       dataIndex: "name", // Check if this should be "name"
       key: "name", // Matching with the key in the data object
@@ -188,19 +202,9 @@ const GetUser = () => {
       key: "shift",
       width: 100,
     },
-    {
-      title: "Actions",
-      key: "actions",
-      render: (_) => (
-        <Space>
-          <EyeOutlined onClick={() => handleUserUpdateModal(_)} />
-        </Space>
-      ),
-      width: 60,
-    },
+   
   ];
   const handleUserUpdateModal = (data) => {
-    console.log({ data });
     setUser(data);
     setVisible(true);
   };
@@ -244,7 +248,6 @@ const GetUser = () => {
         <UpdateUserModal
           visible={visible}
           onCancel={(e) => {
-            console.log("click on cancel", e);
             setVisible(false);
           }}
           user={user}

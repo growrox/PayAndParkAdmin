@@ -8,3 +8,4 @@ export const CreateVehicle = lazy(() => import("./CreateVehicle"));
 export const GetVehicle = lazy(() => import("./VehicleList"));
 export const VehiclePass = lazy(() => import("./VehiclePassManaget"));
 export const TicketList = lazy(() => import("./TicketList"));
+export const SettledTicketsTable = lazy(() => import("./SettledTicketsTable"));
