@@ -12,7 +12,7 @@ import {
   Flex,
 } from "antd";
 import { Outlet, useNavigate } from "react-router-dom";
-import { EditOutlined, ReconciliationOutlined } from "@ant-design/icons";
+import { EditOutlined, ReconciliationOutlined,DatabaseOutlined } from "@ant-design/icons";
 import useApiRequest from "../components/common/useApiRequest";
 import { ROUTES } from "../utils/routes";
 import UpdateUserModal from "../components/userUpdate";
@@ -155,9 +155,18 @@ const GetUser = () => {
           ) : (
             <></>
           )}
+          {_.role === "assistant" ? (
+            <Tooltip title="Attendance">
+              <DatabaseOutlined
+                onClick={() => navigate(`/attendance/${_._id}/${_.name}`)}
+              />
+            </Tooltip>
+          ) : (
+            <></>
+          )}
         </Space>
       ),
-      width: 50,
+      width: 70,
     },
     {
       title: "Name",

@@ -12,7 +12,8 @@ import {
   GetVehicle,
   VehiclePass,
   TicketList,
-  SettledTicketsTable
+  SettledTicketsTable,
+  AttendanceCalendar
 } from "./pages/index.js";
 import ErrorBoundary from "antd/es/alert/ErrorBoundary";
 import Loader from "./components/common/loader.jsx";
@@ -91,6 +92,14 @@ ReactDOM.createRoot(document.getElementById("root")).render(
             element={
               <App>
                 <SettledTicketsTable />
+              </App>
+            }
+          />
+          <Route
+            path="/attendance/:id/:name"
+            element={
+              <App>
+                <AttendanceCalendar />
               </App>
             }
           />

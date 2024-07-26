@@ -30,5 +30,8 @@ export const ROUTES = {
   },
   ACCOUNTANT: {
     GET_SETTLED_TICKETS: "/api/v1/accountant/tickets/settled"
+  },
+  ATTENDANCE: {
+    GET_ATTENDANCE: '/api/v1/get-monthly-attendance',
   }
 };

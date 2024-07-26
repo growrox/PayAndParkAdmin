@@ -1,13 +1,14 @@
 import React from "react";
 import { Form, Input, Button, Select, Card } from "antd";
 import useApiRequest from "../components/common/useApiRequest";
-import { Outlet } from "react-router-dom";
+import { Outlet, useNavigate } from "react-router-dom";
 import { ROUTES } from "../utils/routes";
 
 const UserForm = () => {
   const [form] = Form.useForm();
   const { sendRequest, isLoading } = useApiRequest();
   const { USER } = ROUTES;
+  const navigate = useNavigate()
   const onFinish = async (data) => {
     console.log("Received values of form:", data);
     await sendRequest({
@@ -17,12 +18,12 @@ const UserForm = () => {
       data,
     });
     form.resetFields();
+    navigate("/list-user")
   };
 
   const onFinishFailed = (errorInfo) => {
     console.error("Failed:", errorInfo);
   };
-  console.log({ isLoading });``
   return (
     <Card title="Create User" loading={isLoading}>
       <Form
