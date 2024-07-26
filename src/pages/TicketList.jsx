@@ -19,22 +19,22 @@ const TicketList = () => {
 
   const [pagination, setPagination] = useState({
     current: 1,
-    pageSize: 50,
+    limit: 50,
     total: 0,
   });
 
-  const getTicketList = async (page = 1, pageSize = 50, searchText = "") => {
+  const getTicketList = async (page = 1, limit = 50, searchText = "") => {
     setIsLoading(true);
     try {
       const { totalCount, parkingTickets } = await sendRequest({
         url: `${
           import.meta.env.VITE_BACKEND_URL
-        }${GET_ALL}?page=${page}&pageSize=${pageSize}&search=${searchText}`,
+        }${GET_ALL}?page=${page}&limit=${limit}&search=${searchText}`,
         method: "GET",
         showNotification: false,
       });
       const ticketsWithSerial = parkingTickets.map((ticket, index) => ({
-        serial: (page - 1) * pageSize + index + 1,
+        serial: (page - 1) * limit + index + 1,
         ...ticket,
       }));
       setTicketList(ticketsWithSerial);
@@ -74,11 +74,11 @@ const TicketList = () => {
   };
 
   useEffect(() => {
-    getTicketList(pagination.current, pagination.pageSize, searchText);
-  }, [pagination.current, pagination.pageSize, searchText]);
+    getTicketList(pagination.current, pagination.limit, searchText);
+  }, [pagination.current, pagination.limit, searchText]);
 
-  const handlePageChange = (page, pageSize) => {
-    setPagination({ current: page, pageSize, total: pagination.total });
+  const handlePageChange = (page, limit) => {
+    setPagination({ current: page, limit, total: pagination.total });
   };
 
   const handleSearch = (value) => setSearchText(value);
@@ -201,7 +201,7 @@ const TicketList = () => {
         />
         <Pagination
           current={pagination.current}
-          pageSize={pagination.pageSize}
+          pageSize={pagination.limit}
           total={pagination.total}
           onChange={handlePageChange}
           showSizeChanger

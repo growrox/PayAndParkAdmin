@@ -8,9 +8,11 @@ import {
   Select,
   Space,
   Tag,
+  Tooltip,
+  Flex,
 } from "antd";
 import { Outlet, useNavigate } from "react-router-dom";
-import { EyeOutlined } from "@ant-design/icons";
+import { EditOutlined, ReconciliationOutlined } from "@ant-design/icons";
 import useApiRequest from "../components/common/useApiRequest";
 import { ROUTES } from "../utils/routes";
 import UpdateUserModal from "../components/userUpdate";
@@ -27,7 +29,7 @@ const GetUser = () => {
   const [user, setUser] = useState({});
   const [shifts, setShifts] = useState([]);
   const [visible, setVisible] = useState(false);
-  const navigate = useNavigate()
+  const navigate = useNavigate();
   const {
     USER: { GET_ALL },
     SHIFT: { GET },
@@ -60,8 +62,10 @@ const GetUser = () => {
       const userList = users.map((user, index) => {
         return {
           serial: (page - 1) * pageSize + index + 1,
-          shift: user?.shiftId?.name,
+          shift: user?.shiftId?.name || "NA",
           ...user,
+          code: user.code ? user.code : user.supervisorCode,
+          // shift: user.shift ? user.shift : "No Shift Alloted"
         };
       });
       setUserList(userList);
@@ -130,20 +134,30 @@ const GetUser = () => {
       dataIndex: "serial",
       key: "serial",
       render: (text) => <a>{text}</a>,
-      width: 70,
+      width: 50,
     },
     {
       title: "Actions",
       key: "actions",
       render: (_) => (
         <Space>
-          <EyeOutlined onClick={() => handleUserUpdateModal(_)} />
-            <Button onClick={() => navigate(`/supervisor/${_.name}/${_.role}/${_._id}`)}>
-             Settled Tickets
-            </Button>
+          <Tooltip title="Edit User">
+            <EditOutlined onClick={() => handleUserUpdateModal(_)} />
+          </Tooltip>
+          {_.role !== "assitant" && _.role !== "superadmin" ? (
+            <Tooltip title="Settled Tickets">
+              <ReconciliationOutlined
+                onClick={() =>
+                  navigate(`/supervisor/${_.name}/${_.role}/${_._id}`)
+                }
+              />
+            </Tooltip>
+          ) : (
+            <></>
+          )}
         </Space>
       ),
-      width: 160,
+      width: 50,
     },
     {
       title: "Name",
@@ -152,10 +166,22 @@ const GetUser = () => {
       width: 100,
     },
     {
+      title: "Role",
+      dataIndex: "role",
+      key: "role",
+      width: 100,
+    },
+    {
+      title: "Code",
+      dataIndex: "code", // Check if this should be "name"
+      key: "code", // Matching with the key in the data object
+      width: 100,
+    },
+    {
       title: "Online/Offline",
       dataIndex: "isOnline", // Check if this should be "name"
       key: "isOnline", // Matching with the key in the data object
-      width: 100,
+      width: 150,
       render: (isOnline, _) => (
         <Space>
           {_.role === "assistant" ? (
@@ -167,7 +193,7 @@ const GetUser = () => {
               )}
             </>
           ) : (
-            <></>
+            <Tag color="yellow">No Attendance</Tag>
           )}
         </Space>
       ),
@@ -178,31 +204,20 @@ const GetUser = () => {
       key: "phone", // Matching with the key in the data object
       width: 100,
     },
-    {
-      title: "Code",
-      dataIndex: "code", // Check if this should be "name"
-      key: "code", // Matching with the key in the data object
-      width: 100,
-    },
-    {
-      title: "Supervisor Code",
-      dataIndex: "supervisorCode", // Check if this should be "name"
-      key: "supervisorCode", // Matching with the key in the data object
-      width: 100,
-    },
-    {
-      title: "Role",
-      dataIndex: "role",
-      key: "role",
-      width: 100,
-    },
+
+    // {
+    //   title: "Supervisor Code",
+    //   dataIndex: "supervisorCode", // Check if this should be "name"
+    //   key: "supervisorCode", // Matching with the key in the data object
+    //   width: 100,
+    // },
+
     {
       title: "Shit",
       dataIndex: "shift",
       key: "shift",
       width: 100,
     },
-   
   ];
   const handleUserUpdateModal = (data) => {
     setUser(data);
@@ -212,22 +227,24 @@ const GetUser = () => {
   return (
     <>
       <Card title="User List">
-        <Search
-          placeholder="Search by name"
-          onSearch={handleSearch}
-          style={{ width: 200, marginBottom: 16 }}
-        />
-        <Select
-          placeholder="Select a role"
-          onChange={handleRoleChange}
-          style={{ width: 200, marginBottom: 16, marginLeft: 16 }}
-        >
-          <Option value="">All</Option>
-          <Option value="superadmin">Super Admin</Option>
-          <Option value="supervisor">Supervisor</Option>
-          <Option value="accountant">Accountant</Option>
-          <Option value="assistant">Assistant</Option>
-        </Select>
+        <Flex>
+          <Search
+            placeholder="Search by name"
+            onSearch={handleSearch}
+            style={{ width: 200, marginBottom: 16 }}
+          />
+          <Select
+            placeholder="Select a role"
+            onChange={handleRoleChange}
+            style={{ width: 200, marginBottom: 16, marginLeft: 16 }}
+          >
+            <Option value="">All</Option>
+            <Option value="superadmin">Super Admin</Option>
+            <Option value="supervisor">Supervisor</Option>
+            <Option value="accountant">Accountant</Option>
+            <Option value="assistant">Assistant</Option>
+          </Select>
+        </Flex>
         <Table
           columns={columns}
           dataSource={userList}

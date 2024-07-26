@@ -24,7 +24,6 @@ const LoginForm = () => {
     console.log("Failed:", errorInfo);
   };
   const onSubmit = async (data) => {
-    console.log({ data });
     try {
       setLoading(true);
       const user = await sendRequest({
@@ -49,7 +48,7 @@ const LoginForm = () => {
   return (
     <Flex justify="center" align="center" style={{ height: "100vh" }}>
       <Card
-        style={{ minWidth: "500px" }}
+        style={{ minWidth: "300px", maxWidth: "500px", width: "100%",margin: "auto" }}
         loading={loading}
         title="Login Form"
         extra={

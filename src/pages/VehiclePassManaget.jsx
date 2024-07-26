@@ -11,8 +11,10 @@ import {
   Modal,
   Pagination,
   Table,
+  Tooltip
 } from "antd";
 import dayjs from "dayjs";
+import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
 
 import useApiRequest from "../components/common/useApiRequest";
 import { ROUTES } from "../utils/routes";
@@ -161,52 +163,67 @@ const VehiclePassManager = () => {
           </Button>
         </Flex>
         <Table
+          scroll={{ x: 350, y: 800 }}
           dataSource={vehiclePasses}
           rowKey="_id"
           pagination={false}
           loading={loading}
         >
-          <Table.Column title="Serial No" dataIndex="serial" key="serial" />
+          <Table.Column
+            width={"100px"}
+            title="Serial No"
+            dataIndex="serial"
+            key="serial"
+          />
           <Table.Column
             title="Expiration Date"
             dataIndex="passExpiryDate"
             key="passExpiryDate"
+            width={"250px"}
           />
 
           <Table.Column
             title="Insurance Expiry Date"
             dataIndex="insuranceExpiryDate"
             key="insuranceExpiryDate"
+            width={"250px"}
           />
           <Table.Column
             title="Vehicle Type"
             dataIndex="vehicleType"
             key="vehicleType"
+            width={"150px"}
           />
           <Table.Column
             title="Vehicle Model"
             dataIndex="vehicleModel"
             key="vehicleModel"
+            width={"150px"}
           />
           <Table.Column
             title="Vehicle Color"
             dataIndex="vehicleColor"
             key="vehicleColor"
+            width={"150px"}
           />
-          <Table.Column title="Phone Number" dataIndex="phone" key="phone" />
+          <Table.Column
+            width={"150px"}
+            title="Phone Number"
+            dataIndex="phone"
+            key="phone"
+          />
           <Table.Column
             title="Action"
             key="action"
+            width={"150px"}
             render={(text, record) => (
               <Flex justify="space-around" align="center">
-                <Button onClick={() => showModal(record)}>Edit</Button>
-                <Button
-                  type="primary"
-                  danger
-                  onClick={() => handleDelete(record._id)}
-                >
-                  Delete
-                </Button>
+                <Tooltip title="Edit Pass">
+                  <EditOutlined style={{color: "#f0b634"}} onClick={() => showModal(record)} />
+                </Tooltip>
+                <Tooltip title="Delete Pass">
+                  <DeleteOutlined style={{color: "#df3c59"}} onClick={() => handleDelete(record._id)} />
+                </Tooltip>
               </Flex>
             )}
           />

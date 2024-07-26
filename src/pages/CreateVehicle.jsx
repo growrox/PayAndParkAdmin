@@ -6,7 +6,7 @@ import {
   PlusOutlined,
 } from "@ant-design/icons";
 import axios from "axios";
-import { Outlet, useParams } from "react-router-dom";
+import { Outlet, useNavigate, useParams } from "react-router-dom";
 import { ROUTES } from "../utils/routes";
 import useApiRequest from "../components/common/useApiRequest";
 import userStore from "../store/userStore";
@@ -19,6 +19,7 @@ const CreateVehicleType = () => {
   const { VEHICLE_TYPE } = ROUTES;
   const { sendRequest } = useApiRequest();
   const { user } = userStore();
+  const navigate = useNavigate()
   const onSubmit = async (values) => {
     try {
       const formData = new FormData();
@@ -28,10 +29,12 @@ const CreateVehicleType = () => {
         formData.append("image", values.image[0].originFileObj);
       }
       if (id) {
+        formData.append("folderName", "vehicle-type");
+        console.log({id});
         await sendRequest({
           url: `${import.meta.env.VITE_BACKEND_URL}${
             VEHICLE_TYPE.UPDATE
-          }/${id}`,
+          }/${id}/vehicle-type`,
           method: "PUT",
           headers: {
             "Content-Type": "multipart/form-data",
@@ -42,7 +45,7 @@ const CreateVehicleType = () => {
         getVehicleDetail();
       } else {
         await sendRequest({
-          url: `${import.meta.env.VITE_BACKEND_URL}${VEHICLE_TYPE.CREATE}`,
+          url: `${import.meta.env.VITE_BACKEND_URL}${VEHICLE_TYPE.CREATE}/vehicle-type`,
           method: "POST",
           headers: {
             "Content-Type": "multipart/form-data",
@@ -51,6 +54,7 @@ const CreateVehicleType = () => {
           data: formData,
         });
         form.resetFields();
+        navigate("/vehicle-list")
       }
     } catch (error) {
       console.log({ error });
