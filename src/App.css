@@ -58,9 +58,9 @@
   max-width: 100%;
 }
 
-.ant-picker-calendar-date-value{
+/* .ant-picker-calendar-date-value{
   display: none;
-}
+} */
 .ant-picker-calendar-header > div:nth-child(3){
   display: none;
 }
@@ -97,7 +97,7 @@
 }
 
 
-.custom-calendar .cell {
+/* .custom-calendar .cell {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -150,4 +150,4 @@
 
 .legend-item.absent {
   background-color: #df3c59;
-}
+} */

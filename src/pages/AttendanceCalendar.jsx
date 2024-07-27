@@ -1,32 +1,41 @@
 import React, { useState, useEffect } from "react";
-import { Calendar, Card } from "antd";
+import { Badge, Calendar, Card } from "antd";
 import moment from "moment";
 import { useParams } from "react-router-dom";
 import { ROUTES } from "../utils/routes";
 import useApiRequest from "../components/common/useApiRequest";
 
-const getStatus = (value, attendance) => {
+const getListData = (value, attendance) => {
   const today = moment().startOf("day");
-  const dayAttendance = attendance.find(
-    (item) => moment(item.clockInTime).date() === moment(new Date(value)).date()
-  );
+  const listData = attendance
+    .filter((item) => {
+      return moment(item.clockInTime).date() === moment(new Date(value)).date();
+    })
+    .map((item) => ({
+      type: item.isLateToday ? "warning" : "success",
+      content: item.isLateToday ? "Late" : "Present",
+    }));
 
-  if (dayAttendance) {
-    return dayAttendance.isLateToday ? "late" : "present";
-  } else if (moment(new Date(value)).isSameOrBefore(today)) {
-    return "absent";
-  } else {
-    return "future";
+  if (listData.length === 0 && moment(new Date(value)).isSameOrBefore(today)) {
+    listData.push({
+      type: "error",
+      content: "Absent",
+    });
   }
+
+  return listData;
 };
 
 const dateCellRender = (value, attendance) => {
-  const status = getStatus(value, attendance);
-
+  const listData = getListData(value, attendance);
   return (
-    <div className={`cell ${status}`}>
-      <div className="date">{value.date()}</div>
-    </div>
+    <ul className="events">
+      {listData.map((item, index) => (
+        <li key={index}>
+          <Badge status={item.type} text={item.content} />
+        </li>
+      ))}
+    </ul>
   );
 };
 
@@ -36,20 +45,28 @@ const AttendanceCalendar = () => {
   const [currentMonth, setCurrentMonth] = useState(moment().month());
   const [currentYear, setCurrentYear] = useState(moment().year());
   const { sendRequest } = useApiRequest();
+  const [isLoading, setIsLoading] = useState(false);
   const {
     ATTENDANCE: { GET_ATTENDANCE },
   } = ROUTES;
 
   useEffect(() => {
     const fetchAttendance = async () => {
-      const data = await sendRequest({
-        url: `${
-          import.meta.env.VITE_BACKEND_URL
-        }${GET_ATTENDANCE}?userId=${userId}&year=${currentYear}&month=${currentMonth}`,
-        method: "GET",
-        showNotification: false,
-      });
-      setAttendance(data);
+      setIsLoading(true);
+      try {
+        const data = await sendRequest({
+          url: `${
+            import.meta.env.VITE_BACKEND_URL
+          }${GET_ATTENDANCE}?userId=${userId}&year=${currentYear}&month=${currentMonth}`,
+          method: "GET",
+          showNotification: false,
+        });
+        setAttendance(data);
+      } catch (error) {
+        console.log(error);
+      } finally {
+        setIsLoading(false);
+      }
     };
 
     fetchAttendance();
@@ -65,13 +82,12 @@ const AttendanceCalendar = () => {
   };
 
   return (
-    <Card title={`${name} Attendance`}>
+    <Card title={`${name} Attendance`} loading={isLoading}>
       <Calendar
         dateCellRender={(value) => dateCellRender(value, attendance)}
         onPanelChange={onPanelChange}
         disabledDate={disabledDate}
         className="custom-calendar"
-        mode="month"
       />
       <div style={{ marginTop: 20 }}>
         <ul
@@ -84,13 +100,13 @@ const AttendanceCalendar = () => {
           }}
         >
           <li>
-            <span className="legend-item present">Present</span>
+            <Badge status="success" text="Present" />
           </li>
           <li>
-            <span className="legend-item late">Late</span>
+            <Badge status="warning" text="Late" />
           </li>
           <li>
-            <span className="legend-item absent">Absent</span>
+            <Badge status="error" text="Absent" />
           </li>
         </ul>
       </div>
