@@ -42,6 +42,11 @@ function App({ children }) {
     //   label: "User",
     // },
     {
+      key: "/",
+      icon: <ProfileFilled />,
+      label: "Dashboard",
+    },
+    {
       key: "/create-user",
       icon: <ProfileFilled />,
       label: "Create User",
