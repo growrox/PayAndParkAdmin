@@ -36,7 +36,7 @@ const LoginForm = () => {
         setUser(user);
         setIsLoggedIn(true);
         setTimeout(() => {
-          navigate("/list-user");
+          navigate("/dashboard");
         }, 1000);
       }
     } catch (error) {

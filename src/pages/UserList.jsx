@@ -12,7 +12,11 @@ import {
   Flex,
 } from "antd";
 import { Outlet, useNavigate } from "react-router-dom";
-import { EditOutlined, ReconciliationOutlined,DatabaseOutlined } from "@ant-design/icons";
+import {
+  EditOutlined,
+  ReconciliationOutlined,
+  DatabaseOutlined,
+} from "@ant-design/icons";
 import useApiRequest from "../components/common/useApiRequest";
 import { ROUTES } from "../utils/routes";
 import UpdateUserModal from "../components/userUpdate";
@@ -142,11 +146,15 @@ const GetUser = () => {
       render: (_) => (
         <Space>
           <Tooltip title="Edit User">
-            <EditOutlined onClick={() => handleUserUpdateModal(_)} />
+            <EditOutlined
+              style={{ fontSize: "18px", color: "#f8a81a" }}
+              onClick={() => handleUserUpdateModal(_)}
+            />
           </Tooltip>
-          {_.role !== "assitant" && _.role !== "superadmin" ? (
+          {_.role === "accountant" || _.role === "supervisor" ? (
             <Tooltip title="Settled Tickets">
               <ReconciliationOutlined
+                style={{ fontSize: "18px", color: "#10679b" }}
                 onClick={() =>
                   navigate(`/supervisor/${_.name}/${_.role}/${_._id}`)
                 }
@@ -158,6 +166,7 @@ const GetUser = () => {
           {_.role === "assistant" ? (
             <Tooltip title="Attendance">
               <DatabaseOutlined
+                style={{ fontSize: "18px", color: "#df3c59" }}
                 onClick={() => navigate(`/attendance/${_._id}/${_.name}`)}
               />
             </Tooltip>

@@ -76,11 +76,10 @@ const SettledTicketsTable = () => {
         return {
           ...ticket,
           serial: (page - 1) * pageSize + index + 1,
-          _id: ticket._id.slice(0, 5),
+          // _id: ticket._id.slice(0, 5),
           createdAt: moment(ticket.createdAt).format("DD-MM-YYYY HH:ss"),
         };
       });
-
       setTickets(ticketList);
       setPagination({
         ...pagination,
@@ -130,12 +129,12 @@ const SettledTicketsTable = () => {
       render: (text) => <a>{text}</a>,
       width: 70,
     },
-    {
-      title: "Ticket ID",
-      dataIndex: "_id",
-      key: "id",
-      width: 100,
-    },
+    // {
+    //   title: "Ticket ID",
+    //   dataIndex: "_id",
+    //   key: "id",
+    //   width: 100,
+    // },
     ...(role === "supervisor"
       ? [
           {
@@ -145,16 +144,22 @@ const SettledTicketsTable = () => {
             width: 150,
           },
           {
+            title: "Total Reward",
+            dataIndex: "totalReward",
+            key: "totalReward",
+            width: 150,
+          },
+          {
             title: "Total Fine",
             dataIndex: "totalFine",
             key: "totalFine",
             width: 150,
           },
           {
-            title: "Total Reward",
-            dataIndex: "totalReward",
-            key: "totalReward",
-            width: 150,
+            title: "Total Collected Amount",
+            dataIndex: "totalCollectedAmount",
+            key: "totalCollectedAmount",
+            width: 200,
           },
           {
             title: "Settled",
@@ -167,12 +172,21 @@ const SettledTicketsTable = () => {
             title: "Accountant Settled",
             dataIndex: "accountantName",
             key: "accountantName",
-            render: (accountantName) =>
-              accountantName ? (
+            render: (accountantName, _) =>
+              accountantName !== _?.parkingAssistantName ? (
                 <Tag color="green">{accountantName}</Tag>
               ) : (
                 <Tag color="red">Not Settled</Tag>
               ),
+            width: 150,
+          },
+          {
+            title: "Parking Assitant",
+            dataIndex: "parkingAssistantName",
+            key: "parkingAssistantName",
+            render: (parkingAssistantName) => (
+              <Tag color="green">{parkingAssistantName}</Tag>
+            ),
             width: 150,
           },
         ]
@@ -196,12 +210,6 @@ const SettledTicketsTable = () => {
             width: 150,
           },
         ]),
-    {
-      title: "Total Collected Amount",
-      dataIndex: "totalCollectedAmount",
-      key: "totalCollectedAmount",
-      width: 200,
-    },
   ];
 
   if (loading)
@@ -252,9 +260,9 @@ const SettledTicketsTable = () => {
           <>
             <Card bordered={false}>
               <Statistic
-                valueStyle={{ color: "#3f8600" }}
-                title="Total Collected"
-                value={totalCollected}
+                valueStyle={{ color: "#f8a81a" }}
+                title="Total Reward"
+                value={totalReward}
               />
             </Card>
             <Card bordered={false}>
@@ -266,9 +274,9 @@ const SettledTicketsTable = () => {
             </Card>
             <Card bordered={false}>
               <Statistic
-                valueStyle={{ color: "#f8a81a" }}
-                title="Total Reward"
-                value={totalReward}
+                valueStyle={{ color: "#3f8600" }}
+                title="Total Cash Collected"
+                value={totalCollected}
               />
             </Card>
           </>
