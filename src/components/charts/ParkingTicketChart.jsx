@@ -1,7 +1,6 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Line } from "react-chartjs-2";
 import { Card } from "antd";
-// import 'antd/dist/antd.css';
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -23,27 +22,42 @@ ChartJS.register(
   Legend
 );
 
-const ParkingTicketsChart = () => {
-  const data = {
-    labels: [
-      "Monday",
-      "Tuesday",
-      "Wednesday",
-      "Thursday",
-      "Friday",
-      "Saturday",
-      "Sunday",
-    ],
-    datasets: [
-      {
-        label: "Daily Collection (Rs)",
-        data: [120, 150, 180, 220, 200, 170, 250],
-        fill: false,
-        backgroundColor: "rgba(75,192,192,0.2)",
-        borderColor: "rgba(75,192,192,1)",
-      },
-    ],
-  };
+const ParkingTicketsChart = ({ data }) => {
+  const [chartData, setChartData] = useState(null);
+
+  useEffect(() => {
+    const generateChartData = async () => {
+      try {
+        if (Object.keys(data).length > 0) {
+          const labels = data.chartData.map((entry) => entry.date);
+          const dailyCollections = data.chartData.map(
+            (entry) =>
+              entry.cashTotal +
+              entry.onlineTotal +
+              entry.passTotal +
+              entry.freeTotal
+          );
+
+          setChartData({
+            labels: labels,
+            datasets: [
+              {
+                label: "Daily Collection (Rs)",
+                data: dailyCollections,
+                fill: false,
+                backgroundColor: "rgba(75,192,192,0.2)",
+                borderColor: "rgba(75,192,192,1)",
+              },
+            ],
+          });
+        }
+      } catch (error) {
+        console.error("Error fetching parking ticket data:", error);
+      }
+    };
+
+    generateChartData();
+  }, [data]);
 
   const options = {
     scales: {
@@ -64,7 +78,11 @@ const ParkingTicketsChart = () => {
           alignItems: "center",
         }}
       >
-        <Line data={data} options={options} />
+        {chartData ? (
+          <Line data={chartData} options={options} />
+        ) : (
+          <p>Loading...</p>
+        )}
       </div>
     </Card>
   );

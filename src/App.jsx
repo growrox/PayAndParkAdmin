@@ -14,6 +14,7 @@ import {
   ProfileFilled,
   TruckOutlined,
   UserSwitchOutlined,
+  SisternodeOutlined
 } from "@ant-design/icons";
 
 import Logo from "../public/logo.png";
@@ -75,6 +76,11 @@ function App({ children }) {
       key: "/tickets-list",
       icon: <ExceptionOutlined />,
       label: "Ticket Lists",
+    },
+    {
+      key: "/site-lists",
+      icon: <SisternodeOutlined />,
+      label: "Site List",
     },
   ].map((item) => ({
     ...item,

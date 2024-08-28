@@ -67,6 +67,7 @@ const GetUser = () => {
         return {
           serial: (page - 1) * pageSize + index + 1,
           shift: user?.shiftId?.name || "NA",
+          site: user?.siteId?.name || "NA",
           ...user,
           code: user.code ? user.code : user.supervisorCode,
           // shift: user.shift ? user.shift : "No Shift Alloted"
@@ -222,18 +223,16 @@ const GetUser = () => {
       key: "phone", // Matching with the key in the data object
       width: 100,
     },
-
-    // {
-    //   title: "Supervisor Code",
-    //   dataIndex: "supervisorCode", // Check if this should be "name"
-    //   key: "supervisorCode", // Matching with the key in the data object
-    //   width: 100,
-    // },
-
     {
       title: "Shit",
       dataIndex: "shift",
       key: "shift",
+      width: 150,
+    },
+    {
+      title: "Site",
+      dataIndex: "site",
+      key: "site",
       width: 100,
     },
   ];

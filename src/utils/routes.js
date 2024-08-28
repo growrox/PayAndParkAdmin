@@ -24,7 +24,7 @@ export const ROUTES = {
   TICKET: {
     GET_ALL: "/api/v1/admin/parking-tickets",
     GET_LOCATION: "/api/v1/parking-ticket/location",
-  },
+    GET_PARKING_TICKETS_IN_DATE_RANGE: "/api/v1/parking-tickets-by-date-range"  },
   SUPERVISOR: {
     GET_SETTLED_TICKETS: "/api/v1/supervisor/tickets/all"
   },
@@ -33,5 +33,11 @@ export const ROUTES = {
   },
   ATTENDANCE: {
     GET_ATTENDANCE: '/api/v1/get-monthly-attendance',
+  },
+  SITE: {
+    CREATE: "/api/v1/create-site",
+    GET_ALL: "/api/v1/get-all-sites",
+    UPDATE: "/api/v1/update-site",
+    DELETE: "/api/v1/delete-site",
   }
 };
