@@ -1,10 +1,28 @@
 import React, { useState, useEffect } from "react";
-import { Card, Table, Pagination, Button, Input, Tag, Space, message } from "antd";
+import {
+  Card,
+  Table,
+  Pagination,
+  Button,
+  Input,
+  Tag,
+  Space,
+  message,
+  Flex,
+  DatePicker,
+  Row,
+  Col,
+  Statistic,
+} from "antd";
 import { Outlet } from "react-router-dom";
 import useApiRequest from "../components/common/useApiRequest";
 import { ROUTES } from "../utils/routes";
+import UserFilter from "../components/userFilter";
+import { ArrowUpOutlined } from "@ant-design/icons";
+import DownloadReport from "../components/downloadTicketReport";
 
 const { Search } = Input;
+const { RangePicker } = DatePicker;
 
 const TicketList = () => {
   const { sendRequest } = useApiRequest();
@@ -12,9 +30,18 @@ const TicketList = () => {
   const [ticketList, setTicketList] = useState([]);
   const [searchText, setSearchText] = useState("");
   const [addresses, setAddresses] = useState({});
+  const [dateRange, setDateRange] = useState([]);
+  const [assitants, setAssistants] = useState([]);
+  const [supervisors, setSupervisors] = useState([]);
+  const [amountTotal, setAmountTotal] = useState({
+    cash: 0,
+    online: 0,
+    free: 0,
+    pass: 0,
+  });
 
   const {
-    TICKET: { GET_ALL, GET_LOCATION },
+    TICKET: { GET_ALL, GET_LOCATION, GET_ALL_TICKETS_AMOUNT_TOTAL },
   } = ROUTES;
 
   const [pagination, setPagination] = useState({
@@ -23,16 +50,46 @@ const TicketList = () => {
     total: 0,
   });
 
-  const getTicketList = async (page = 1, limit = 50, searchText = "") => {
+  const getTicketList = async (
+    page = 1,
+    limit = 50,
+    searchText = "",
+    supervisors = [],
+    assistants = []
+  ) => {
     setIsLoading(true);
     try {
+      const [startDate, endDate] = dateRange;
+
       const { totalCount, parkingTickets } = await sendRequest({
         url: `${
           import.meta.env.VITE_BACKEND_URL
         }${GET_ALL}?page=${page}&limit=${limit}&search=${searchText}`,
-        method: "GET",
+        method: "POST",
         showNotification: false,
+        data: {
+          supervisors,
+          assistants,
+          startDate,
+          endDate,
+        },
       });
+      const total = await sendRequest({
+        url: `${
+          import.meta.env.VITE_BACKEND_URL
+        }${GET_ALL_TICKETS_AMOUNT_TOTAL}?page=${page}&limit=${limit}&search=${searchText}`,
+        method: "POST",
+        showNotification: false,
+        data: {
+          supervisors,
+          assistants,
+          startDate,
+          endDate,
+        },
+      });
+      console.log({ total });
+
+      setAmountTotal(total);
       const ticketsWithSerial = parkingTickets.map((ticket, index) => ({
         serial: (page - 1) * limit + index + 1,
         ...ticket,
@@ -49,11 +106,13 @@ const TicketList = () => {
 
   const getTicketLocation = async (ticket) => {
     setIsLoading(true);
-    const {address: {latitude,longitude}} = ticket
+    const {
+      address: { latitude, longitude },
+    } = ticket;
     try {
-      if(!latitude || !longitude){
+      if (!latitude || !longitude) {
         message.error("No Lattitude or Longitude");
-        throw new Error("No Lattitude or Longitude")
+        throw new Error("No Lattitude or Longitude");
       }
       const response = await sendRequest({
         url: `${
@@ -75,7 +134,7 @@ const TicketList = () => {
 
   useEffect(() => {
     getTicketList(pagination.current, pagination.limit, searchText);
-  }, [pagination.current, pagination.limit, searchText]);
+  }, [pagination.current, pagination.limit, searchText, dateRange]);
 
   const handlePageChange = (page, limit) => {
     setPagination({ current: page, limit, total: pagination.total });
@@ -146,20 +205,26 @@ const TicketList = () => {
     },
     {
       title: "Parking Assistant",
-      dataIndex: ["parkingAssistant", "name"],
-      key: "parkingAssistant",
+      dataIndex: ["parkingAssistantDetails", "name"],
+      key: "parkingAssistantDetails",
       width: 150,
     },
     {
       title: "Assistant Contact",
-      dataIndex: ["parkingAssistant", "phone"],
+      dataIndex: ["parkingAssistantDetails", "phone"],
       key: "assistantContact",
       width: 120,
     },
     {
       title: "Supervisor Code",
-      dataIndex: ["parkingAssistant", "supervisorCode"],
+      dataIndex: ["parkingAssistantDetails", "supervisorCode"],
       key: "supervisorCode",
+      width: 100,
+    },
+    {
+      title: "Supervisor Name",
+      dataIndex: ["supervisorDetails", "name"],
+      key: "supervisorName",
       width: 100,
     },
     {
@@ -183,15 +248,94 @@ const TicketList = () => {
       width: 100,
     },
   ];
+  const handleDateChange = (dates) => {
+    if (dates && dates.length === 2) {
+      setDateRange([
+        dates[0].startOf("day"), // Ensure the start date is at the beginning of the day
+        dates[1].endOf("day"), // Ensure the end date is at the end of the day
+      ]);
+    } else {
+      setDateRange([]);
+    }
+  };
 
   return (
     <>
       <Card title="Tickets List">
-        <Search
-          placeholder="Search tickets"
-          onSearch={handleSearch}
-          style={{ width: 200, marginBottom: 16 }}
-        />
+        <Row gutter={16} style={{ marginBottom: "1rem" }}>
+          <Col xs={24} sm={12} md={8} lg={8}>
+            <Card bordered={false} style={{ marginBottom: "0.5rem" }}>
+              <Statistic
+                title="Total Collection"
+                value={amountTotal.cash + amountTotal.online}
+                precision={0}
+                valueStyle={{ color: "#3f8600" }}
+                suffix="₹"
+              />
+            </Card>
+          </Col>
+          <Col xs={24} sm={12} md={8} lg={8}>
+            <Card bordered={false} style={{ marginBottom: "0.5rem" }}>
+              <Statistic
+                title="Cash Collection"
+                value={amountTotal.cash}
+                precision={0}
+                valueStyle={{ color: "#3f8600" }}
+                prefix={amountTotal.cash > 0 ? <ArrowUpOutlined /> : <></>}
+                suffix="₹"
+              />
+            </Card>
+          </Col>
+          <Col xs={24} sm={12} md={8} lg={8}>
+            <Card bordered={false} style={{ marginBottom: "0.5rem" }}>
+              <Statistic
+                title="Online Collection"
+                value={amountTotal.online}
+                precision={0}
+                valueStyle={{ color: "#3f8600" }}
+                prefix={amountTotal.online > 0 ? <ArrowUpOutlined /> : <></>}
+                suffix="₹"
+              />
+            </Card>
+          </Col>
+        </Row>
+
+        <Row gutter={[16, 16]} style={{ marginBottom: "1rem" }}>
+          <Col xs={24} sm={12} md={8} lg={8}>
+            <Search
+              placeholder="Search tickets"
+              onSearch={handleSearch}
+              style={{ width: "100%" }}
+            />
+          </Col>
+          <Col xs={24} sm={12} md={8} lg={8}>
+            <UserFilter
+              getTicketList={getTicketList}
+              pagination={pagination}
+              searchText={searchText}
+              setSupervisors={setSupervisors}
+              setAssistants={setAssistants}
+            />
+          </Col>
+          <Col xs={24} sm={12} md={8} lg={8}>
+            <RangePicker
+              onChange={handleDateChange}
+              format="YYYY-MM-DD"
+              allowClear={true} // Prevent clearing of date range to ensure consistency
+              style={{ width: "100%" }}
+            />
+          </Col>
+          <Col xs={24} sm={12} md={8} lg={8}>
+            <DownloadReport
+              supervisors={supervisors}
+              assistants={assitants}
+              startDate={dateRange?.[0]}
+              endDate={dateRange?.[1]}
+              searchText={searchText}
+              setIsLoading={setIsLoading}
+            />
+          </Col>
+        </Row>
         <Table
           columns={columns}
           dataSource={ticketList}
