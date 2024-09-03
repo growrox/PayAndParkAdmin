@@ -84,7 +84,7 @@ const GetVehicle = () => {
       render: (url) => <Image src={url} height={"150px"} width={"150px"} />,
     },
     {
-      title: "Hourly Prices",
+      title: "Hourly Prices With GST",
       dataIndex: "hourlyPrices", // Check if this should be "name"
       key: "hourlyPrices", // Matching with the key in the data object
       width: 70,

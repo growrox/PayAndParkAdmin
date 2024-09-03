@@ -1,5 +1,14 @@
 import React, { useEffect } from "react";
-import { Form, Input, Button, Upload, message, Space, Card } from "antd";
+import {
+  Form,
+  Input,
+  Button,
+  Upload,
+  message,
+  Space,
+  Card,
+  InputNumber,
+} from "antd";
 import {
   InboxOutlined,
   MinusCircleOutlined,
@@ -19,18 +28,19 @@ const CreateVehicleType = () => {
   const { VEHICLE_TYPE } = ROUTES;
   const { sendRequest } = useApiRequest();
   const { user } = userStore();
-  const navigate = useNavigate()
+  const navigate = useNavigate();
   const onSubmit = async (values) => {
     try {
       const formData = new FormData();
       formData.append("name", values.name);
+      formData.append("gstPercentage", values.gstPercentage);
       formData.append("hourlyPrices", JSON.stringify(values.hourlyPrices));
       if (values.image && values.image[0]) {
         formData.append("image", values.image[0].originFileObj);
       }
       if (id) {
         formData.append("folderName", "vehicle-type");
-        console.log({id});
+        console.log({ id });
         await sendRequest({
           url: `${import.meta.env.VITE_BACKEND_URL}${
             VEHICLE_TYPE.UPDATE
@@ -45,7 +55,9 @@ const CreateVehicleType = () => {
         getVehicleDetail();
       } else {
         await sendRequest({
-          url: `${import.meta.env.VITE_BACKEND_URL}${VEHICLE_TYPE.CREATE}/vehicle-type`,
+          url: `${import.meta.env.VITE_BACKEND_URL}${
+            VEHICLE_TYPE.CREATE
+          }/vehicle-type`,
           method: "POST",
           headers: {
             "Content-Type": "multipart/form-data",
@@ -54,7 +66,7 @@ const CreateVehicleType = () => {
           data: formData,
         });
         form.resetFields();
-        navigate("/vehicle-list")
+        navigate("/vehicle-list");
       }
     } catch (error) {
       console.log({ error });
@@ -77,6 +89,7 @@ const CreateVehicleType = () => {
       });
       form.setFieldsValue({
         name: response.name,
+        gstPercentage: response.gstPercentage,
         hourlyPrices: response.hourlyPrices,
       });
       if (response.image) {
@@ -116,6 +129,18 @@ const CreateVehicleType = () => {
             ]}
           >
             <Input placeholder="Enter vehicle type name" />
+          </Form.Item>
+          <Form.Item
+            name="gstPercentage"
+            label="GST Percentage"
+            rules={[
+              {
+                required: true,
+                message: "Please input the GST percentage of the vehicle type!",
+              },
+            ]}
+          >
+            <InputNumber placeholder="Enter GST" />
           </Form.Item>
 
           <Form.List
@@ -173,7 +198,7 @@ const CreateVehicleType = () => {
 
           <Form.Item
             name="image"
-            label="Vehicle Type Image"
+            label="Vehicle Image"
             valuePropName="fileList"
             getValueFromEvent={normFile} // Adjusted to handle file list from the upload
           >

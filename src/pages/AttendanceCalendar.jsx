@@ -1,53 +1,50 @@
 import React, { useState, useEffect } from "react";
-import { Badge, Calendar, Card } from "antd";
+import {
+  Badge,
+  Card,
+  Modal,
+  Form,
+  Switch,
+  Button,
+  message,
+  Typography,
+  Input,
+  Table,
+  DatePicker,
+} from "antd";
 import moment from "moment";
 import { useParams } from "react-router-dom";
 import { ROUTES } from "../utils/routes";
 import useApiRequest from "../components/common/useApiRequest";
 
-const getListData = (value, attendance) => {
-  const today = moment().startOf("day");
-  const listData = attendance
-    .filter((item) => {
-      return moment(item.clockInTime).date() === moment(new Date(value)).date();
-    })
-    .map((item) => ({
-      type: item.isLateToday ? "warning" : "success",
-      content: item.isLateToday ? "Late" : "Present",
-    }));
+const { Text } = Typography;
+const { MonthPicker } = DatePicker;
 
-  if (listData.length === 0 && moment(new Date(value)).isSameOrBefore(today)) {
-    listData.push({
-      type: "error",
-      content: "Absent",
-    });
+const generateDatesForMonth = (year, month) => {
+  const startDate = moment([year, month]);
+  const endDate = startDate.clone().endOf("month");
+  const dates = [];
+
+  for (let date = startDate; date.isBefore(endDate); date.add(1, "day")) {
+    dates.push(date.clone());
   }
 
-  return listData;
+  return dates;
 };
 
-const dateCellRender = (value, attendance) => {
-  const listData = getListData(value, attendance);
-  return (
-    <ul className="events">
-      {listData.map((item, index) => (
-        <li key={index}>
-          <Badge status={item.type} text={item.content} />
-        </li>
-      ))}
-    </ul>
-  );
-};
-
-const AttendanceCalendar = () => {
+const AttendanceTable = () => {
   const { id: userId, name } = useParams();
   const [attendance, setAttendance] = useState([]);
   const [currentMonth, setCurrentMonth] = useState(moment().month());
   const [currentYear, setCurrentYear] = useState(moment().year());
   const { sendRequest } = useApiRequest();
   const [isLoading, setIsLoading] = useState(false);
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [selectedAttendanceId, setSelectedAttendanceId] = useState(null); // Store attendance ID
+  const [form] = Form.useForm();
+
   const {
-    ATTENDANCE: { GET_ATTENDANCE },
+    ATTENDANCE: { GET_ATTENDANCE, UPDATE_ATTENDANCE },
   } = ROUTES;
 
   useEffect(() => {
@@ -72,23 +69,181 @@ const AttendanceCalendar = () => {
     fetchAttendance();
   }, [userId, currentMonth, currentYear]);
 
-  const onPanelChange = (value) => {
-    setCurrentMonth(value.month());
-    setCurrentYear(value.year());
+  const handleMonthChange = (date) => {
+    setCurrentMonth(date.month());
+    setCurrentYear(date.year());
   };
 
-  const disabledDate = (current) => {
-    return current.month() !== currentMonth;
+  const showModal = (attendanceId, value) => {
+    console.log({ value });
+
+    form.setFieldsValue({
+      isLateToday: value.isLateToday,
+      clockInTime: value.clockInTime
+        ? moment(value.clockInTime).format("MMMM Do YYYY, h:mm:ss a")
+        : "N/A",
+      clockOutTime: value.clockOutTime
+        ? moment(value.clockOutTime).format("MMMM Do YYYY, h:mm:ss a")
+        : "N/A",
+    });
+    setSelectedAttendanceId(attendanceId); // Set selected attendance ID
+    setIsModalVisible(true);
   };
+
+  const handleCancel = () => {
+    setIsModalVisible(false);
+    form.resetFields();
+  };
+
+  const handleUpdate = async () => {
+    try {
+      const values = await form.validateFields();
+      console.log({
+        values,
+        url: `${
+          import.meta.env.VITE_BACKEND_URL
+        }${UPDATE_ATTENDANCE}/${selectedAttendanceId}`,
+      });
+
+      await sendRequest({
+        url: `${
+          import.meta.env.VITE_BACKEND_URL
+        }${UPDATE_ATTENDANCE}/${selectedAttendanceId}`,
+        method: "PATCH",
+        data: values,
+      });
+      message.success("Attendance updated successfully!");
+      setIsModalVisible(false);
+      form.resetFields();
+      // Refresh attendance data
+      const data = await sendRequest({
+        url: `${
+          import.meta.env.VITE_BACKEND_URL
+        }${GET_ATTENDANCE}?userId=${userId}&year=${currentYear}&month=${currentMonth}`,
+        method: "GET",
+        showNotification: false,
+      });
+      setAttendance(data);
+    } catch (error) {
+      console.error("Failed to update attendance:", error);
+      message.error("Failed to update attendance.");
+    } finally {
+      setSelectedAttendanceId(null);
+    }
+  };
+
+  const dates = generateDatesForMonth(currentYear, currentMonth);
+
+  const columns = [
+    {
+      title: "Date",
+      dataIndex: "date",
+      key: "date",
+    },
+    {
+      title: "Status",
+      dataIndex: "status",
+      key: "status",
+      sorter: (a, b) => {
+        const statusOrder = { Present: 1, Late: 2, "No Data / Absent": 3 };
+        return statusOrder[a.status] - statusOrder[b.status];
+      },
+      render: (status) => (
+        <Badge
+          status={
+            status === "Present"
+              ? "success"
+              : status === "Late"
+              ? "warning"
+              : "error"
+          }
+          text={status}
+        />
+      ),
+    },
+    {
+      title: "Actions",
+      key: "actions",
+      render: (text, record) =>
+        record.attendanceId && (
+          <Button onClick={() => showModal(record.attendanceId, record)}>
+            View Details
+          </Button>
+        ),
+    },
+  ];
+
+  const dataSource = dates.map((date) => {
+    const attendanceData = attendance.find((item) =>
+      moment(item.clockInTime).isSame(date, "day")
+    );
+    if (attendanceData) {
+      return {
+        ...attendanceData,
+        key: date.format("YYYY-MM-DD"),
+        date: date.format("MMMM Do YYYY"),
+        status: attendanceData.isLateToday ? "Late" : "Present",
+        attendanceId: attendanceData._id,
+        clockInTime: attendanceData.clockInTime,
+        clockOutTime: attendanceData.clockOutTime,
+      };
+    } else {
+      return {
+        key: date.format("YYYY-MM-DD"),
+        date: date.format("MMMM Do YYYY"),
+        status: "No Data / Absent",
+        attendanceId: null,
+      };
+    }
+  });
 
   return (
-    <Card title={`${name} Attendance`} loading={isLoading}>
-      <Calendar
-        dateCellRender={(value) => dateCellRender(value, attendance)}
-        onPanelChange={onPanelChange}
-        disabledDate={disabledDate}
-        className="custom-calendar"
+    <Card
+      title={`${name} Attendance`}
+      extra={
+        <MonthPicker
+          // defaultValue={moment(`${currentYear}-${currentMonth + 1}`, "YYYY-MM")}
+          format="MMMM YYYY"
+          onChange={handleMonthChange}
+        />
+      }
+      loading={isLoading}
+    >
+      <Table
+        scroll={{ x: 350, y: 600 }}
+        dataSource={dataSource}
+        columns={columns}
+        pagination={false}
       />
+      <Modal
+        title="Update Attendance"
+        visible={isModalVisible}
+        onCancel={handleCancel}
+        onOk={handleUpdate}
+      >
+        <Form form={form} layout="vertical">
+          <Form.Item
+            name="isLateToday"
+            label="Mark as Late"
+            valuePropName="checked"
+          >
+            <Switch />
+          </Form.Item>
+          <Form.Item
+            name="removeClockOut"
+            label="Hard Clock In (Override)"
+            valuePropName="checked"
+          >
+            <Switch />
+          </Form.Item>
+          <Form.Item name="clockInTime" label="Clock In Time">
+            <Input readOnly />
+          </Form.Item>
+          <Form.Item name="clockOutTime" label="Clock Out Time">
+            <Input readOnly />
+          </Form.Item>
+        </Form>
+      </Modal>
       <div style={{ marginTop: 20 }}>
         <ul
           className="legend"
@@ -106,7 +261,7 @@ const AttendanceCalendar = () => {
             <Badge status="warning" text="Late" />
           </li>
           <li>
-            <Badge status="error" text="Absent" />
+            <Badge status="error" text="No Data / Absent" />
           </li>
         </ul>
       </div>
@@ -114,4 +269,4 @@ const AttendanceCalendar = () => {
   );
 };
 
-export default AttendanceCalendar;
+export default AttendanceTable;

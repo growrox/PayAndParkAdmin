@@ -36,11 +36,13 @@ export const ROUTES = {
   },
   ATTENDANCE: {
     GET_ATTENDANCE: "/api/v1/get-monthly-attendance",
+    UPDATE_ATTENDANCE: '/api/v1/attendance/update',
   },
   SITE: {
     CREATE: "/api/v1/create-site",
     GET_ALL: "/api/v1/get-all-sites",
     UPDATE: "/api/v1/update-site",
     DELETE: "/api/v1/delete-site",
+    GET_PARKING_TICKET_BY_SITE_AND_SUPERVISOR: "/api/v1/site-summary",
   },
 };
