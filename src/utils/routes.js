@@ -43,6 +43,6 @@ export const ROUTES = {
     GET_ALL: "/api/v1/get-all-sites",
     UPDATE: "/api/v1/update-site",
     DELETE: "/api/v1/delete-site",
-    GET_PARKING_TICKET_BY_SITE_AND_SUPERVISOR: "/api/v1/site-summary",
+    GET_PARKING_TICKET_BY_SITE_AND_SUPERVISOR: "/api/v1/site/all/supervisor",
   },
 };
