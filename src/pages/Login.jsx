@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Button, Card, Form, Input, message, Typography } from "antd";
+import { Button, Card, Form, Input, message, Row, Typography, Col } from "antd";
 import { useNavigate } from "react-router-dom";
 
 import Logo from "../../public/logo.png";
@@ -51,14 +51,15 @@ const LoginForm = () => {
         showNotification: true,
         data: { ...loginData, OTP: otp }, // Send OTP along with login data
       });
-      setUser(response);
-      setIsLoggedIn(true);
-      setTimeout(() => {
-        navigate("/"); // Redirect to admin page
-      }, 500);
+      if (Object.keys(response).length > 0) {
+        setUser(response);
+        setIsLoggedIn(true);
+        setTimeout(() => {
+          navigate("/"); // Redirect to admin page
+        }, 100);
+      }
     } catch (error) {
       console.error(error);
-      message.error("OTP verification failed.");
     } finally {
       setLoading(false);
     }
@@ -122,7 +123,7 @@ const LoginForm = () => {
               <Input.Password />
             </Form.Item>
 
-            <Form.Item wrapperCol={{ offset: 8, span: 16 }}>
+            <Form.Item style={{ textAlign: "end" }}>
               <Button type="primary" htmlType="submit" loading={loading}>
                 Submit
               </Button>
@@ -154,12 +155,38 @@ const LoginForm = () => {
                 Verify OTP
               </Button>
             </Form.Item>
+          </Form>
+        )}
+        <Row justify={"start"}>
+          <Col
+            xs={24}
+            sm={12}
+            md={8}
+            lg={8}
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
             <Button type="link" onClick={backToLogin} disabled={loading}>
               Back to Login
             </Button>
-          </Form>
-        )}
-        <Link href="/forgot-password">Forgot Password</Link>{" "}
+          </Col>
+          <Col
+            xs={24}
+            sm={12}
+            md={8}
+            lg={8}
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            <Link href="/forgot-password">Forgot Password</Link>{" "}
+          </Col>
+        </Row>
       </Card>
     </div>
   );

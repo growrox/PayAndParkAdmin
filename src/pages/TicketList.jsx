@@ -15,6 +15,7 @@ import {
   Statistic,
   Checkbox,
   Switch,
+  Select,
 } from "antd";
 import { Outlet } from "react-router-dom";
 import useApiRequest from "../components/common/useApiRequest";
@@ -35,7 +36,8 @@ const TicketList = () => {
   const [dateRange, setDateRange] = useState([]);
   const [assitants, setAssistants] = useState([]);
   const [supervisors, setSupervisors] = useState([]);
-  const [ticketType, setTicketType] = useState("Regular");
+  const [ticketType, setTicketType] = useState(true);
+  const [isPass, setIsPass] = useState("all");
   const [amountTotal, setAmountTotal] = useState({
     cash: 0,
     online: 0,
@@ -95,7 +97,7 @@ const TicketList = () => {
         const { totalCount, parkingTickets } = await sendRequest({
           url: `${
             import.meta.env.VITE_BACKEND_URL
-          }${GET_ALL}?page=${page}&limit=${limit}&search=${searchText}`,
+          }${GET_ALL}?page=${page}&limit=${limit}&search=${searchText}&isPass=${isPass}`,
           method: "POST",
           showNotification: false,
           data: {
@@ -190,7 +192,14 @@ const TicketList = () => {
 
   useEffect(() => {
     getTicketList(pagination.current, pagination.limit, searchText);
-  }, [pagination.current, pagination.limit, searchText, dateRange, ticketType]);
+  }, [
+    pagination.current,
+    pagination.limit,
+    searchText,
+    dateRange,
+    ticketType,
+    isPass,
+  ]);
 
   const handlePageChange = (page, limit) => {
     setPagination({ current: page, limit, total: pagination.total });
@@ -252,6 +261,12 @@ const TicketList = () => {
       width: 100,
     },
     {
+      title: "Ticket Id",
+      dataIndex: "ticketRefId",
+      key: "ticketRefId",
+      width: 100,
+    },
+    {
       title: "Vehicle Number",
       dataIndex: "vehicleNumber",
       key: "vehicleNumber",
@@ -266,6 +281,15 @@ const TicketList = () => {
         <Tag color={paymentMode === "Pass" ? "green" : "volcano"}>
           {paymentMode}
         </Tag>
+      ),
+    },
+    {
+      title: "Ticket / pass",
+      dataIndex: "isPass",
+      key: "isPass",
+      width: 100,
+      render: (isPass) => (
+        <Tag color={"yellow"}>{isPass ? "Pass" : "Ticket"}</Tag>
       ),
     },
     {
@@ -339,6 +363,9 @@ const TicketList = () => {
     }
   };
   console.log({ ticketType });
+  const handleTicketType = (value) => {
+    setIsPass(value);
+  };
 
   return (
     <>
@@ -407,6 +434,33 @@ const TicketList = () => {
             />
           </Col>
           <Col xs={24} sm={12} md={8} lg={8}>
+            <Select
+              placeholder="Select Type of Ticket"
+              style={{ width: "100%" }}
+              onChange={handleTicketType}
+              value={isPass}
+            >
+              <Option key={"all"} value={"all"}>
+                All
+              </Option>
+              <Option key={"pass"} value={"pass"}>
+                Pass
+              </Option>
+              <Option key={"ticket"} value={"ticket"}>
+                Ticket
+              </Option>
+            </Select>
+          </Col>
+
+          <Col xs={24} sm={12} md={8} lg={8}>
+            <Switch
+              checkedChildren={"Regular"}
+              unCheckedChildren={"Deleted"}
+              value={ticketType}
+              onChange={(value) => setTicketType(value)}
+            />
+          </Col>
+          <Col xs={24} sm={12} md={8} lg={8}>
             <DownloadReport
               supervisors={supervisors}
               assistants={assitants}
@@ -414,14 +468,7 @@ const TicketList = () => {
               endDate={dateRange?.[1]}
               searchText={searchText}
               setIsLoading={setIsLoading}
-            />
-          </Col>
-          <Col xs={24} sm={12} md={8} lg={8}>
-            <Switch
-              checkedChildren={"Regular"}
-              unCheckedChildren={"Deleted"}
-              value={ticketType}
-              onChange={(value) => setTicketType(value)}
+              isPass={isPass}
             />
           </Col>
         </Row>

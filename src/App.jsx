@@ -14,7 +14,8 @@ import {
   ProfileFilled,
   TruckOutlined,
   UserSwitchOutlined,
-  SisternodeOutlined
+  SisternodeOutlined,
+  UsergroupAddOutlined,
 } from "@ant-design/icons";
 
 import Logo from "../public/logo.png";
@@ -37,41 +38,45 @@ function App({ children }) {
   };
 
   const menuItems = [
-    // {
-    //   key: "/create-user",
-    //   icon: <UsergroupAddOutlined />,
-    //   label: "User",
-    // },
     {
       key: "/",
       icon: <ProfileFilled />,
       label: "Dashboard",
     },
+
     {
-      key: "/create-user",
-      icon: <ProfileFilled />,
-      label: "Create User",
+      icon: <UsergroupAddOutlined />,
+      label: "User",
+      children: [
+        {
+          key: "/create-user",
+          icon: <ProfileFilled />,
+          label: "Create User",
+        },
+        {
+          key: "/list-user",
+          icon: <UserSwitchOutlined />,
+          label: "List Users",
+        },
+      ],
     },
     {
-      key: "/list-user",
-      icon: <UserSwitchOutlined />,
-      label: "List User",
+      icon: <UsergroupAddOutlined />,
+      label: "Vehicle",
+      children: [
+        {
+          key: "/create-vehicle",
+          icon: <CarOutlined />,
+          label: "Create Vehicle",
+        },
+        {
+          key: "/vehicle-list",
+          icon: <TruckOutlined />,
+          label: "Vehicle List",
+        },
+      ],
     },
-    {
-      key: "/create-vehicle",
-      icon: <CarOutlined />,
-      label: "Create Vehicle",
-    },
-    {
-      key: "/vehicle-list",
-      icon: <TruckOutlined />,
-      label: "Vehicle List",
-    },
-    {
-      key: "/vehicle-pass",
-      icon: <NodeExpandOutlined />,
-      label: "Vehicle Pass",
-    },
+
     {
       key: "/tickets-list",
       icon: <ExceptionOutlined />,
@@ -84,7 +89,11 @@ function App({ children }) {
     },
   ].map((item) => ({
     ...item,
-    label: <Link to={item.key}>{item.label}</Link>,
+    label: (
+      <Link style={{ color: "inherit" }} to={item.key}>
+        {item.label}
+      </Link>
+    ),
     children: item.children
       ? item.children
           .filter((child) => child.visible !== false)
@@ -105,7 +114,11 @@ function App({ children }) {
       }}
       items={menuItems.map((item) => ({
         ...item,
-        label: <Link to={item.key}>{item.label}</Link>,
+        label: (
+          <Link style={{ color: "inherit" }} to={item.key}>
+            {item.label}
+          </Link>
+        ),
       }))}
     />
   );

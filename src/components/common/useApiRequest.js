@@ -1,10 +1,10 @@
-import { useState } from 'react';
+import { useState } from "react";
 
-import { notification } from 'antd';
-import axios from 'axios';
-import { useNavigate } from 'react-router';
+import { notification } from "antd";
+import axios from "axios";
+import { useNavigate } from "react-router";
 
-import userStore from '../../store/userStore';
+import userStore from "../../store/userStore";
 
 const useApiRequest = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -52,8 +52,15 @@ const useApiRequest = () => {
           navigate("/login");
         }
       }
-      if (showNotification && error.response?.data?.message) {
-        notification.error({ message: error.response.data.message });
+      console.log({ error, showNotification });
+
+      if (
+        showNotification &&
+        (error.response?.data?.message || error.response.data.error)
+      ) {
+        notification.error({
+          message: error.response.data.error || error.response.data.message,
+        });
       }
       console.error(error);
       return null; // Return null on error to handle it in the component where the hook is used.

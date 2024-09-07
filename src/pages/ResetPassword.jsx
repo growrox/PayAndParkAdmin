@@ -23,22 +23,23 @@ const ResetPasswordForm = () => {
       message.error("Passwords do not match!");
       return;
     }
-    console.log( { phone, OTP: otp, password, confirmPassword });
-    
+    console.log({ phone, OTP: otp, password, confirmPassword });
+
     try {
       setLoading(true);
-      await sendRequest({
+      const response = await sendRequest({
         url: `${import.meta.env.VITE_BACKEND_URL}${USER.UPDATE_PASSWORD}`,
         method: "PATCH",
         showNotification: true,
         data: { phone, OTP: otp, password, confirmPassword },
       });
-      setTimeout(() => {
-        navigate("/login");
-      }, 1000);
+      if (Object.keys(response).length > 0) {
+        setTimeout(() => {
+          navigate("/login");
+        }, 1000);
+      }
     } catch (error) {
       console.error(error);
-      message.error("Failed to reset password.");
     } finally {
       setLoading(false);
     }

@@ -13,6 +13,7 @@ const DownloadReport = ({
   endDate,
   searchText,
   setIsLoading,
+  isPass,
 }) => {
   const [format, setFormat] = useState("pdf"); // Default to PDF
   const { user, setUser, setIsLoggedIn } = userStore();
@@ -26,7 +27,7 @@ const DownloadReport = ({
       const response = await axios({
         url: `${
           import.meta.env.VITE_BACKEND_URL
-        }${GET_ALL}?search=${searchText}&exportFormat=${format}`,
+        }${GET_ALL}?search=${searchText}&exportFormat=${format}&isPass=${isPass}`,
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -66,7 +67,7 @@ const DownloadReport = ({
   };
 
   return (
-    <Space direction="vertical" align="center">
+    <Space direction="horizontal" align="center">
       <Radio.Group
         value={format}
         onChange={(e) => setFormat(e.target.value)}
