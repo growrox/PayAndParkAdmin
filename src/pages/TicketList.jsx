@@ -13,6 +13,8 @@ import {
   Row,
   Col,
   Statistic,
+  Checkbox,
+  Switch,
 } from "antd";
 import { Outlet } from "react-router-dom";
 import useApiRequest from "../components/common/useApiRequest";
@@ -33,6 +35,7 @@ const TicketList = () => {
   const [dateRange, setDateRange] = useState([]);
   const [assitants, setAssistants] = useState([]);
   const [supervisors, setSupervisors] = useState([]);
+  const [ticketType, setTicketType] = useState("Regular");
   const [amountTotal, setAmountTotal] = useState({
     cash: 0,
     online: 0,
@@ -41,7 +44,14 @@ const TicketList = () => {
   });
 
   const {
-    TICKET: { GET_ALL, GET_LOCATION, GET_ALL_TICKETS_AMOUNT_TOTAL },
+    TICKET: {
+      GET_ALL,
+      GET_LOCATION,
+      GET_ALL_TICKETS_AMOUNT_TOTAL,
+      DELTE_TICEKT_BY_ID,
+      GET_ALL_DELETED_TICKETS,
+      RESTORE_TICEKT_BY_ID,
+    },
   } = ROUTES;
 
   const [pagination, setPagination] = useState({
@@ -61,41 +71,63 @@ const TicketList = () => {
     try {
       const [startDate, endDate] = dateRange;
 
-      const { totalCount, parkingTickets } = await sendRequest({
-        url: `${
-          import.meta.env.VITE_BACKEND_URL
-        }${GET_ALL}?page=${page}&limit=${limit}&search=${searchText}`,
-        method: "POST",
-        showNotification: false,
-        data: {
-          supervisors,
-          assistants,
-          startDate,
-          endDate,
-        },
-      });
-      const total = await sendRequest({
-        url: `${
-          import.meta.env.VITE_BACKEND_URL
-        }${GET_ALL_TICKETS_AMOUNT_TOTAL}?page=${page}&limit=${limit}&search=${searchText}`,
-        method: "POST",
-        showNotification: false,
-        data: {
-          supervisors,
-          assistants,
-          startDate,
-          endDate,
-        },
-      });
-      console.log({ total });
+      if (!ticketType) {
+        const { totalCount, parkingTickets } = await sendRequest({
+          url: `${
+            import.meta.env.VITE_BACKEND_URL
+          }${GET_ALL_DELETED_TICKETS}?page=${page}&limit=${limit}`,
+          method: "GET",
+          showNotification: false,
+        });
+        const ticketsWithSerial = parkingTickets.map((ticket, index) => ({
+          serial: (page - 1) * limit + index + 1,
+          ...ticket,
+        }));
+        setTicketList(ticketsWithSerial);
+        setAmountTotal({
+          cash: 0,
+          online: 0,
+          free: 0,
+          pass: 0,
+        });
+        setPagination({ ...pagination, total: totalCount });
+      } else {
+        const { totalCount, parkingTickets } = await sendRequest({
+          url: `${
+            import.meta.env.VITE_BACKEND_URL
+          }${GET_ALL}?page=${page}&limit=${limit}&search=${searchText}`,
+          method: "POST",
+          showNotification: false,
+          data: {
+            supervisors,
+            assistants,
+            startDate,
+            endDate,
+          },
+        });
+        const total = await sendRequest({
+          url: `${
+            import.meta.env.VITE_BACKEND_URL
+          }${GET_ALL_TICKETS_AMOUNT_TOTAL}?page=${page}&limit=${limit}&search=${searchText}`,
+          method: "POST",
+          showNotification: false,
+          data: {
+            supervisors,
+            assistants,
+            startDate,
+            endDate,
+          },
+        });
+        console.log({ total });
 
-      setAmountTotal(total);
-      const ticketsWithSerial = parkingTickets.map((ticket, index) => ({
-        serial: (page - 1) * limit + index + 1,
-        ...ticket,
-      }));
-      setTicketList(ticketsWithSerial);
-      setPagination({ ...pagination, total: totalCount });
+        setAmountTotal(total);
+        const ticketsWithSerial = parkingTickets.map((ticket, index) => ({
+          serial: (page - 1) * limit + index + 1,
+          ...ticket,
+        }));
+        setTicketList(ticketsWithSerial);
+        setPagination({ ...pagination, total: totalCount });
+      }
     } catch (error) {
       console.error(error);
       setTicketList([]);
@@ -132,9 +164,33 @@ const TicketList = () => {
     }
   };
 
+  const deleteAndRestoreTicket = async (id) => {
+    setIsLoading(true);
+
+    try {
+      if (!id) {
+        message.error("No Id to delete the Ticket");
+        throw new Error("No Id to delete the Ticket");
+      }
+      await sendRequest({
+        url: `${import.meta.env.VITE_BACKEND_URL}${
+          ticketType ? DELTE_TICEKT_BY_ID : RESTORE_TICEKT_BY_ID
+        }/${id}`,
+        method: ticketType ? "DELETE" : "GET",
+        showNotification: true,
+        data: {},
+      });
+      getTicketList(pagination.current, pagination.limit, searchText);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   useEffect(() => {
     getTicketList(pagination.current, pagination.limit, searchText);
-  }, [pagination.current, pagination.limit, searchText, dateRange]);
+  }, [pagination.current, pagination.limit, searchText, dateRange, ticketType]);
 
   const handlePageChange = (page, limit) => {
     setPagination({ current: page, limit, total: pagination.total });
@@ -162,6 +218,30 @@ const TicketList = () => {
             Show Address
           </Button>
           <p> {addresses[record._id]}</p>
+        </>
+      ),
+    },
+    {
+      title: "Action",
+      key: "action",
+      width: 150,
+      render: (_, record) => (
+        <>
+          {!ticketType ? (
+            <Button
+              type="primary"
+              onClick={() => deleteAndRestoreTicket(record._id)}
+            >
+              Restore Ticket
+            </Button>
+          ) : (
+            <Button
+              type="primary"
+              onClick={() => deleteAndRestoreTicket(record._id)}
+            >
+              Delete Ticket
+            </Button>
+          )}
         </>
       ),
     },
@@ -258,6 +338,7 @@ const TicketList = () => {
       setDateRange([]);
     }
   };
+  console.log({ ticketType });
 
   return (
     <>
@@ -333,6 +414,14 @@ const TicketList = () => {
               endDate={dateRange?.[1]}
               searchText={searchText}
               setIsLoading={setIsLoading}
+            />
+          </Col>
+          <Col xs={24} sm={12} md={8} lg={8}>
+            <Switch
+              checkedChildren={"Regular"}
+              unCheckedChildren={"Deleted"}
+              value={ticketType}
+              onChange={(value) => setTicketType(value)}
             />
           </Col>
         </Row>

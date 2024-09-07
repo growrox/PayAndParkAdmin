@@ -99,7 +99,7 @@ function App({ children }) {
     <Menu
       theme="dark"
       mode="inline"
-      defaultSelectedKeys={["1"]}
+      defaultSelectedKeys={["/"]}
       onClick={() => {
         setVisible(false);
       }}

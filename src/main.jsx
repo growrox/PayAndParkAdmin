@@ -14,7 +14,9 @@ import {
   TicketList,
   SettledTicketsTable,
   AttendanceCalendar,
-  SiteManager
+  SiteManager,
+  ForgotPassword,
+  ResetPassword,
 } from "./pages/index.js";
 import ErrorBoundary from "antd/es/alert/ErrorBoundary";
 import Loader from "./components/common/loader.jsx";
@@ -114,6 +116,8 @@ ReactDOM.createRoot(document.getElementById("root")).render(
           />
 
           <Route path="/login" element={<Login />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/reset-password" element={<ResetPassword />} />
 
           {/* Add more routes as needed */}
         </Routes>

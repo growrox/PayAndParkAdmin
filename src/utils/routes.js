@@ -5,6 +5,9 @@ export const ROUTES = {
     GET_ALL: "/api/v1/users",
     UPDATE: "/api/v1/user",
     GET_SUPERVISOR_WITH_ASSISTANT: "/api/v1/supervisors-with-assistants",
+    VERIFY_OTP: "/api/v1/verify-otp",
+    FORGOT_PASSWORD: "/api/v1/user/forgot-password",
+    UPDATE_PASSWORD: "/api/v1/user/update-password"
   },
   VEHICLE_TYPE: {
     CREATE: "/api/v1/create-vehicle-type",
@@ -27,6 +30,9 @@ export const ROUTES = {
     GET_LOCATION: "/api/v1/parking-ticket/location",
     GET_PARKING_TICKETS_IN_DATE_RANGE: "/api/v1/parking-tickets-by-date-range",
     GET_ALL_TICKETS_AMOUNT_TOTAL: "/api/v1/admin/parking-tickets-cash-total",
+    DELTE_TICEKT_BY_ID: "/api/v1/parking-tickets/delete",
+    GET_ALL_DELETED_TICKETS: "/api/v1/admin/parking-tickets/deleted",
+    RESTORE_TICEKT_BY_ID: "/api/v1/parking-tickets/restore",
   },
   SUPERVISOR: {
     GET_SETTLED_TICKETS: "/api/v1/supervisor/tickets/all",

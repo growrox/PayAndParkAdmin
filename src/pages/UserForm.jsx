@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Form, Input, Button, Select, Card } from "antd";
 import useApiRequest from "../components/common/useApiRequest";
 import { Outlet, useNavigate } from "react-router-dom";
@@ -8,7 +8,11 @@ const UserForm = () => {
   const [form] = Form.useForm();
   const { sendRequest, isLoading } = useApiRequest();
   const { USER } = ROUTES;
-  const navigate = useNavigate()
+  const navigate = useNavigate();
+
+  // State to track selected role
+  const [role, setRole] = useState("accountant");
+
   const onFinish = async (data) => {
     console.log("Received values of form:", data);
     await sendRequest({
@@ -18,12 +22,16 @@ const UserForm = () => {
       data,
     });
     form.resetFields();
-    navigate("/list-user")
   };
 
   const onFinishFailed = (errorInfo) => {
     console.error("Failed:", errorInfo);
   };
+
+  const handleRoleChange = (value) => {
+    setRole(value); // Update role when selection changes
+  };
+
   return (
     <Card title="Create User" loading={isLoading}>
       <Form
@@ -72,11 +80,31 @@ const UserForm = () => {
           name="role"
           rules={[{ required: true, message: "Please select a role!" }]}
         >
-          <Select>
+          <Select onChange={handleRoleChange}>
             <Select.Option value="accountant">Accountant</Select.Option>
             <Select.Option value="supervisor">Supervisor</Select.Option>
           </Select>
         </Form.Item>
+
+        {/* Conditionally render the password field if the role is 'accountant' */}
+        {role === "accountant" && (
+          <Form.Item
+            label="Password"
+            name="password"
+            rules={[
+              {
+                required: true,
+                message: "Please input the password!",
+              },
+              {
+                min: 6,
+                message: "Password must be at least 6 characters long!",
+              },
+            ]}
+          >
+            <Input.Password />
+          </Form.Item>
+        )}
 
         <Form.Item>
           <Button type="primary" htmlType="submit">
