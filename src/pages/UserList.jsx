@@ -41,13 +41,13 @@ const GetUser = () => {
 
   const [pagination, setPagination] = useState({
     current: 1,
-    pageSize: 50,
+    pageSize: 20,
     total: 0,
   });
 
   const getUserList = async (
     page = 1,
-    pageSize = 50,
+    pageSize = 20,
     searchText = "",
     selectedRole = ""
   ) => {

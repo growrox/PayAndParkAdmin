@@ -70,9 +70,9 @@ const ForgotPasswordForm = () => {
         {!otpSent ? (
           <Form
             name="forgotPassword"
-            labelCol={{ span: 6 }}
             onFinish={onSubmitPhone}
             autoComplete="off"
+            layout="vertical"
           >
             <Form.Item
               label="Phone Number"

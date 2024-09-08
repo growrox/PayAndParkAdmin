@@ -197,6 +197,10 @@ const AttendanceTable = () => {
     }
   });
 
+  const disabledDate = (current) => {
+    // Disable all months before August 2024
+    return current && current.isBefore(moment("2024-08", "YYYY-MM"));
+  };
   return (
     <Card
       title={`${name} Attendance`}
@@ -205,6 +209,7 @@ const AttendanceTable = () => {
           // defaultValue={moment(`${currentYear}-${currentMonth + 1}`, "YYYY-MM")}
           format="MMMM YYYY"
           onChange={handleMonthChange}
+          disabledDate={disabledDate}
         />
       }
       loading={isLoading}

@@ -23,6 +23,7 @@ import { ROUTES } from "../utils/routes";
 import UserFilter from "../components/userFilter";
 import { ArrowUpOutlined } from "@ant-design/icons";
 import DownloadReport from "../components/downloadTicketReport";
+import moment from "moment";
 
 const { Search } = Input;
 const { RangePicker } = DatePicker;
@@ -58,13 +59,13 @@ const TicketList = () => {
 
   const [pagination, setPagination] = useState({
     current: 1,
-    limit: 50,
+    limit: 20,
     total: 0,
   });
 
   const getTicketList = async (
     page = 1,
-    limit = 50,
+    limit = 20,
     searchText = "",
     supervisors = [],
     assistants = []
@@ -226,7 +227,14 @@ const TicketList = () => {
           >
             Show Address
           </Button>
-          <p> {addresses[record._id]}</p>
+          <p
+            style={
+              addresses[record._id] ? { display: "block" } : { display: "none" }
+            }
+          >
+            {" "}
+            {addresses[record._id]}
+          </p>
         </>
       ),
     },
@@ -332,6 +340,12 @@ const TicketList = () => {
       width: 100,
     },
     {
+      title: "Vehicle Type",
+      dataIndex: "vehicleType",
+      key: "vehicleType",
+      width: 100,
+    },
+    {
       title: "Amount",
       dataIndex: "amount",
       key: "amount",
@@ -339,17 +353,39 @@ const TicketList = () => {
       render: (amount) => `₹ ${amount.toFixed(2)}`,
     },
     {
+      title: "Base Amount",
+      dataIndex: "baseAmount",
+      key: "baseAmount",
+      width: 100,
+      render: (baseAmount) => `₹ ${baseAmount?.toFixed(2)}`,
+    },
+    {
+      title: "CGST",
+      dataIndex: "cgst",
+      key: "cgst",
+      width: 100,
+      render: (cgst) => `₹ ${cgst?.toFixed(2)}`,
+    },
+    {
+      title: "SGCT",
+      dataIndex: "sgst",
+      key: "sgst",
+      width: 100,
+      render: (sgst) => `₹ ${sgst?.toFixed(2)}`,
+    },
+    {
       title: "Date",
       dataIndex: "createdAt",
       key: "createdAt",
       width: 150,
-      render: (date) => new Date(date).toLocaleDateString(),
+      render: (date) => moment(date).format("MMMM Do YYYY, h:mm:ss a"),
     },
     {
-      title: "Vehicle Type",
-      dataIndex: "vehicleType",
-      key: "vehicleType",
-      width: 100,
+      title: "Expiry Date",
+      dataIndex: "ticketExpiry",
+      key: "ticketExpiry",
+      width: 150,
+      render: (date) => moment(date).format("MMMM Do YYYY, h:mm:ss a"),
     },
   ];
   const handleDateChange = (dates) => {

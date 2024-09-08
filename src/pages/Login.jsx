@@ -98,10 +98,10 @@ const LoginForm = () => {
           // First form: Phone and password
           <Form
             name="login"
-            labelCol={{ span: 6 }}
             initialValues={{ remember: true }}
             onFinish={onSubmitLogin}
             autoComplete="off"
+            layout="vertical"
           >
             <Form.Item
               label="Phone Number"
@@ -157,7 +157,7 @@ const LoginForm = () => {
             </Form.Item>
           </Form>
         )}
-        <Row justify={"start"}>
+        <Row justify={"space-between"}>
           <Col
             xs={24}
             sm={12}

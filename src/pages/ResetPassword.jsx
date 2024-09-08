@@ -71,9 +71,9 @@ const ResetPasswordForm = () => {
       >
         <Form
           name="resetPassword"
-          labelCol={{ span: 6 }}
           onFinish={onSubmitReset}
           autoComplete="off"
+          layout="vertical"
         >
           <Form.Item
             label="OTP"
