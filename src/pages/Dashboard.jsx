@@ -26,8 +26,12 @@ const Dashboard = () => {
   }, []);
 
   const [dateRange, setDateRange] = useState([
-    moment().startOf('month'),
-    moment(),
+    moment()
+      .utcOffset(0)
+      .set({ date: 1, hour: 0, minute: 0, second: 0, millisecond: 0 }),
+    moment()
+      .utcOffset(0)
+      .set({ hour: 0, minute: 0, second: 0, millisecond: 0 }),
   ]);
   const [isLoading, setIsLoading] = useState(false);
   const [data, setData] = useState({});
