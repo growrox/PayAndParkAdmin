@@ -26,7 +26,7 @@ const Dashboard = () => {
   }, []);
 
   const [dateRange, setDateRange] = useState([
-    moment().subtract(7, "days"),
+    moment().startOf('month'),
     moment(),
   ]);
   const [isLoading, setIsLoading] = useState(false);
@@ -50,7 +50,7 @@ const Dashboard = () => {
         const response = await sendRequest({
           url: `${
             import.meta.env.VITE_BACKEND_URL
-          }${GET_PARKING_TICKETS_IN_DATE_RANGE}?startDate=${startDate.toISOString()}&endDate=${endDate.toISOString()}`,
+          }${GET_PARKING_TICKETS_IN_DATE_RANGE}?startDate=${startDate?.toISOString()}&endDate=${endDate?.toISOString()}`,
           method: "GET",
           showNotification: false,
         });

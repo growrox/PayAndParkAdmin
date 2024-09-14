@@ -7,7 +7,6 @@ import {
   Switch,
   Button,
   message,
-  Typography,
   Input,
   Table,
   DatePicker,
@@ -17,7 +16,6 @@ import { useParams } from "react-router-dom";
 import { ROUTES } from "../utils/routes";
 import useApiRequest from "../components/common/useApiRequest";
 
-const { Text } = Typography;
 const { MonthPicker } = DatePicker;
 
 const generateDatesForMonth = (year, month) => {
@@ -41,10 +39,12 @@ const AttendanceTable = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [selectedAttendanceId, setSelectedAttendanceId] = useState(null); // Store attendance ID
+  const [addresses, setAddresses] = useState({}); // Store locations
   const [form] = Form.useForm();
 
   const {
     ATTENDANCE: { GET_ATTENDANCE, UPDATE_ATTENDANCE },
+    TICKET: { GET_LOCATION },
   } = ROUTES;
 
   useEffect(() => {
@@ -75,8 +75,6 @@ const AttendanceTable = () => {
   };
 
   const showModal = (attendanceId, value) => {
-    console.log({ value });
-
     form.setFieldsValue({
       isLateToday: value.isLateToday,
       clockInTime: value.clockInTime
@@ -98,13 +96,6 @@ const AttendanceTable = () => {
   const handleUpdate = async () => {
     try {
       const values = await form.validateFields();
-      console.log({
-        values,
-        url: `${
-          import.meta.env.VITE_BACKEND_URL
-        }${UPDATE_ATTENDANCE}/${selectedAttendanceId}`,
-      });
-
       await sendRequest({
         url: `${
           import.meta.env.VITE_BACKEND_URL
@@ -115,7 +106,6 @@ const AttendanceTable = () => {
       message.success("Attendance updated successfully!");
       setIsModalVisible(false);
       form.resetFields();
-      // Refresh attendance data
       const data = await sendRequest({
         url: `${
           import.meta.env.VITE_BACKEND_URL
@@ -129,6 +119,47 @@ const AttendanceTable = () => {
       message.error("Failed to update attendance.");
     } finally {
       setSelectedAttendanceId(null);
+    }
+  };
+
+  const getTicketLocation = async (attendanceData, type) => {
+    setIsLoading(true);
+    const latitude =
+      type === "clockIn"
+        ? attendanceData.clockInLat
+        : attendanceData.clockOutLat;
+    const longitude =
+      type === "clockIn"
+        ? attendanceData.clockInLon
+        : attendanceData.clockOutLon;
+
+    try {
+      if (!latitude || !longitude) {
+        return message.error("No Latitude or Longitude available");
+      }
+      const response = await sendRequest({
+        url: `${
+          import.meta.env.VITE_BACKEND_URL
+        }${GET_LOCATION}?lat=${latitude}&lon=${longitude}`,
+        method: "GET",
+        showNotification: false,
+      });
+
+      const address = response[0].formattedAddress;
+      setAddresses((prev) => ({
+        ...prev,
+        [attendanceData._id + type]: address, // Save location for this attendance and type (clockIn/clockOut)
+      }));
+      message.success(
+        `Location for ${
+          type === "clockIn" ? "Clock In" : "Clock Out"
+        }: ${address}`
+      );
+    } catch (error) {
+      console.error(error);
+      message.error("Failed to fetch location.");
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -162,13 +193,43 @@ const AttendanceTable = () => {
       ),
     },
     {
+      title: "Clock In Location",
+      dataIndex: "clockInLocation",
+      key: "clockInLocation",
+      render: (_, record) =>
+        addresses[record.attendanceId + "clockIn"] || (
+          <Button
+            onClick={() => getTicketLocation(record, "clockIn")}
+            disabled={!record.clockInLat || !record.clockInLon}
+          >
+            Fetch Location
+          </Button>
+        ),
+    },
+    {
+      title: "Clock Out Location",
+      dataIndex: "clockOutLocation",
+      key: "clockOutLocation",
+      render: (_, record) =>
+        addresses[record.attendanceId + "clockOut"] || (
+          <Button
+            onClick={() => getTicketLocation(record, "clockOut")}
+            disabled={!record.clockOutLat || !record.clockOutLon}
+          >
+            Fetch Location
+          </Button>
+        ),
+    },
+    {
       title: "Actions",
       key: "actions",
       render: (text, record) =>
         record.attendanceId && (
-          <Button onClick={() => showModal(record.attendanceId, record)}>
-            View Details
-          </Button>
+          <>
+            <Button onClick={() => showModal(record.attendanceId, record)}>
+              View Details
+            </Button>
+          </>
         ),
     },
   ];
@@ -186,6 +247,10 @@ const AttendanceTable = () => {
         attendanceId: attendanceData._id,
         clockInTime: attendanceData.clockInTime,
         clockOutTime: attendanceData.clockOutTime,
+        clockInLat: attendanceData?.clockInLocation?.latitude, // Assume latitude and longitude are available
+        clockInLon: attendanceData?.clockInLocation?.longitude,
+        clockOutLat: attendanceData?.clockOutLocation?.latitude,
+        clockOutLon: attendanceData?.clockOutLocation?.longitude,
       };
     } else {
       return {
@@ -201,12 +266,12 @@ const AttendanceTable = () => {
     // Disable all months before August 2024
     return current && current.isBefore(moment("2024-08", "YYYY-MM"));
   };
+
   return (
     <Card
       title={`${name} Attendance`}
       extra={
         <MonthPicker
-          // defaultValue={moment(`${currentYear}-${currentMonth + 1}`, "YYYY-MM")}
           format="MMMM YYYY"
           onChange={handleMonthChange}
           disabledDate={disabledDate}
