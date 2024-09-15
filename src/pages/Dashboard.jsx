@@ -35,7 +35,8 @@ const Dashboard = () => {
   ]);
   const [isLoading, setIsLoading] = useState(false);
   const [data, setData] = useState({});
-  const [totalCollection, setTotalCollection] = useState(0);
+  const [totalCollection, setTotalCollection] = useState({});
+  const [todayCollection, setTodayCollection] = useState({});
   const [totalNoOfOnlineUsers, setTotalNoOfOnlineUsers] = useState(0);
 
   const handleDateChange = (dates) => {
@@ -60,7 +61,8 @@ const Dashboard = () => {
         });
         console.log({ response });
 
-        setTotalCollection(response?.totals?.totalAmount);
+        setTotalCollection(response?.totals);
+        setTodayCollection(response?.todayTotal);
         setTotalNoOfOnlineUsers(response?.onlineUsers.length);
 
         setData(response);
@@ -108,27 +110,115 @@ const Dashboard = () => {
                 </div>
               }
             >
-              <Row gutter={16} style={{ marginBottom: "1rem" }}>
-                <Col span={12}>
-                  <Card bordered={false}>
-                    <Statistic
-                      title="Total Tickets Collection"
-                      value={totalCollection}
-                      precision={2}
-                      valueStyle={{ color: "#3f8600" }}
-                    />
-                  </Card>
-                </Col>
-                <Col span={12}>
-                  <Card bordered={false}>
-                    <Statistic
-                      title="Online Users"
-                      value={totalNoOfOnlineUsers}
-                      valueStyle={{ color: "#3f8600" }}
-                    />
-                  </Card>
-                </Col>
-              </Row>
+              <Card
+                title="Total Collection Report"
+                style={{ marginBottom: "1rem" }}
+              >
+                <Row
+                  gutter={16}
+                  style={{ marginBottom: "1rem", rowGap: "0.5rem" }}
+                >
+                  <Col span={12}>
+                    <Card bordered={false}>
+                      <Statistic
+                        title="Total Tickets Collection"
+                        value={totalCollection.totalAmount}
+                        precision={2}
+                        valueStyle={{ color: "#3f8600" }}
+                      />
+                    </Card>
+                  </Col>
+                  <Col span={12}>
+                    <Card bordered={false}>
+                      <Statistic
+                        title="Total Cash  Tickets Collection"
+                        value={totalCollection.cashTotal}
+                        precision={2}
+                        valueStyle={{ color: "#3f8600" }}
+                      />
+                    </Card>
+                  </Col>
+                  <Col span={12}>
+                    <Card bordered={false}>
+                      <Statistic
+                        title="Total Online Tickets Collection"
+                        value={totalCollection.onlineTotal}
+                        precision={2}
+                        valueStyle={{ color: "#3f8600" }}
+                      />
+                    </Card>
+                  </Col>
+                  <Col span={12}>
+                    <Card bordered={false}>
+                      <Statistic
+                        title="Total Pass Tickets Collection"
+                        value={totalCollection.passTotal}
+                        precision={2}
+                        valueStyle={{ color: "#3f8600" }}
+                      />
+                    </Card>
+                  </Col>
+                  <Col span={12}>
+                    <Card bordered={false}>
+                      <Statistic
+                        title="Online Users"
+                        value={totalNoOfOnlineUsers}
+                        valueStyle={{ color: "#3f8600" }}
+                      />
+                    </Card>
+                  </Col>
+                </Row>
+              </Card>
+              <Card
+                title="Today Collection Report"
+                style={{ marginBottom: "1rem" }}
+              >
+                <Row
+                  gutter={16}
+                  style={{ marginBottom: "1rem", rowGap: "0.5rem" }}
+                >
+                  <Col span={12}>
+                    <Card bordered={false}>
+                      <Statistic
+                        title="Total Tickets Collection"
+                        value={todayCollection.totalAmount}
+                        precision={2}
+                        valueStyle={{ color: "#3f8600" }}
+                      />
+                    </Card>
+                  </Col>
+                  <Col span={12}>
+                    <Card bordered={false}>
+                      <Statistic
+                        title="Total Cash  Tickets Collection"
+                        value={todayCollection.cashTotal}
+                        precision={2}
+                        valueStyle={{ color: "#3f8600" }}
+                      />
+                    </Card>
+                  </Col>
+                  <Col span={12}>
+                    <Card bordered={false}>
+                      <Statistic
+                        title="Total Online Tickets Collection"
+                        value={todayCollection.onlineTotal}
+                        precision={2}
+                        valueStyle={{ color: "#3f8600" }}
+                      />
+                    </Card>
+                  </Col>
+                  <Col span={12}>
+                    <Card bordered={false}>
+                      <Statistic
+                        title="Total Pass Tickets Collection"
+                        value={todayCollection.passTotal}
+                        precision={2}
+                        valueStyle={{ color: "#3f8600" }}
+                      />
+                    </Card>
+                  </Col>
+                </Row>
+              </Card>
               <div
                 className="site-layout-content"
                 style={{ marginBottom: "1rem" }}

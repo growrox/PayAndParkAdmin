@@ -367,7 +367,7 @@ const TicketList = () => {
       render: (cgst) => `₹ ${cgst?.toFixed(2)}`,
     },
     {
-      title: "SGCT",
+      title: "SGST",
       dataIndex: "sgst",
       key: "sgst",
       width: 100,

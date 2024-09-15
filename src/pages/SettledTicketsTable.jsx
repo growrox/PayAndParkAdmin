@@ -138,6 +138,28 @@ const SettledTicketsTable = () => {
     ...(role === "supervisor"
       ? [
           {
+            title: "Parking Assitant",
+            dataIndex: "parkingAssistantName",
+            key: "parkingAssistantName",
+            render: (parkingAssistantName) => (
+              <Tag color="green">{parkingAssistantName}</Tag>
+            ),
+            width: 150,
+          },
+          {
+            title: "Accountant Settled",
+            dataIndex: "accountantName",
+            key: "accountantName",
+            render: (accountantName, _) =>
+              accountantName !== _?.parkingAssistantName ? (
+                <Tag color="green">{accountantName}</Tag>
+              ) : (
+                <Tag color="red">Not Settled</Tag>
+              ),
+            width: 150,
+          },
+
+          {
             title: "Total Collection (Online / Offline)",
             dataIndex: "totalCollection",
             key: "totalCollection",
@@ -168,25 +190,11 @@ const SettledTicketsTable = () => {
             render: () => <Tag color="green">Settled</Tag>,
             width: 150,
           },
+
           {
-            title: "Accountant Settled",
-            dataIndex: "accountantName",
-            key: "accountantName",
-            render: (accountantName, _) =>
-              accountantName !== _?.parkingAssistantName ? (
-                <Tag color="green">{accountantName}</Tag>
-              ) : (
-                <Tag color="red">Not Settled</Tag>
-              ),
-            width: 150,
-          },
-          {
-            title: "Parking Assitant",
-            dataIndex: "parkingAssistantName",
-            key: "parkingAssistantName",
-            render: (parkingAssistantName) => (
-              <Tag color="green">{parkingAssistantName}</Tag>
-            ),
+            title: "Created At",
+            dataIndex: "createdAt",
+            key: "createdAt",
             width: 150,
           },
         ]
@@ -195,6 +203,12 @@ const SettledTicketsTable = () => {
             title: "Supervisor Name",
             dataIndex: "supervisorName",
             key: "supervisorName",
+            width: 200,
+          },
+          {
+            title: "Collected Amount",
+            dataIndex: "totalCollectedAmount",
+            key: "totalCollectedAmount",
             width: 200,
           },
           {
@@ -237,7 +251,7 @@ const SettledTicketsTable = () => {
         </Col>
         <Col>
           <Search
-            placeholder="Search tickets"
+            placeholder="Search Assitant"
             onSearch={(value) => setSearchTerm(value)}
             allowClear
             disabled={loading}
