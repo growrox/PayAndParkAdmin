@@ -37,6 +37,7 @@ const AttendanceTable = () => {
   const [currentYear, setCurrentYear] = useState(moment().year());
   const { sendRequest } = useApiRequest();
   const [isLoading, setIsLoading] = useState(false);
+  const [isLocationLoading, setIsLocationLoading] = useState(false);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [selectedAttendanceId, setSelectedAttendanceId] = useState(null); // Store attendance ID
   const [addresses, setAddresses] = useState({}); // Store locations
@@ -123,7 +124,7 @@ const AttendanceTable = () => {
   };
 
   const getTicketLocation = async (attendanceData, type) => {
-    setIsLoading(true);
+    setIsLocationLoading(true);
     const latitude =
       type === "clockIn"
         ? attendanceData.clockInLat
@@ -132,9 +133,15 @@ const AttendanceTable = () => {
       type === "clockIn"
         ? attendanceData.clockInLon
         : attendanceData.clockOutLon;
+    console.log({ latitude, longitude });
 
     try {
-      if (!latitude || !longitude) {
+      if (
+        !latitude ||
+        !longitude ||
+        latitude === "undefined" ||
+        longitude === "undefined"
+      ) {
         return message.error("No Latitude or Longitude available");
       }
       const response = await sendRequest({
@@ -150,16 +157,11 @@ const AttendanceTable = () => {
         ...prev,
         [attendanceData._id + type]: address, // Save location for this attendance and type (clockIn/clockOut)
       }));
-      message.success(
-        `Location for ${
-          type === "clockIn" ? "Clock In" : "Clock Out"
-        }: ${address}`
-      );
     } catch (error) {
       console.error(error);
       message.error("Failed to fetch location.");
     } finally {
-      setIsLoading(false);
+      setIsLocationLoading(false);
     }
   };
 
@@ -170,6 +172,7 @@ const AttendanceTable = () => {
       title: "Date",
       dataIndex: "date",
       key: "date",
+      width: 70,
     },
     {
       title: "Status",
@@ -191,20 +194,24 @@ const AttendanceTable = () => {
           text={status}
         />
       ),
+      width: 70,
     },
     {
       title: "Clock In Location",
       dataIndex: "clockInLocation",
       key: "clockInLocation",
+
       render: (_, record) =>
         addresses[record.attendanceId + "clockIn"] || (
           <Button
+            loading={isLocationLoading}
             onClick={() => getTicketLocation(record, "clockIn")}
             disabled={!record.clockInLat || !record.clockInLon}
           >
             Fetch Location
           </Button>
         ),
+      width: 150,
     },
     {
       title: "Clock Out Location",
@@ -213,12 +220,14 @@ const AttendanceTable = () => {
       render: (_, record) =>
         addresses[record.attendanceId + "clockOut"] || (
           <Button
+            loading={isLocationLoading}
             onClick={() => getTicketLocation(record, "clockOut")}
             disabled={!record.clockOutLat || !record.clockOutLon}
           >
             Fetch Location
           </Button>
         ),
+      width: 150,
     },
     {
       title: "Actions",
@@ -231,6 +240,7 @@ const AttendanceTable = () => {
             </Button>
           </>
         ),
+      width: 80,
     },
   ];
 

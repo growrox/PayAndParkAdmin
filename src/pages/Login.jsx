@@ -22,18 +22,18 @@ const LoginForm = () => {
   const onSubmitLogin = async (data) => {
     try {
       setLoading(true);
-      await sendRequest({
+      const response = await sendRequest({
         url: `${import.meta.env.VITE_BACKEND_URL}${USER.LOGIN}`,
         method: "POST",
         showNotification: true,
         data,
       });
-
-      setLoginData(data);
-      setOtpSent(true);
+      if (response) {
+        setLoginData(data);
+        setOtpSent(true);
+      }
     } catch (error) {
       console.error(error);
-      message.error("Login failed.");
     } finally {
       setLoading(false);
     }
@@ -51,7 +51,10 @@ const LoginForm = () => {
         showNotification: true,
         data: { ...loginData, OTP: otp }, // Send OTP along with login data
       });
+
       if (Object.keys(response).length > 0) {
+        console.log("running inner");
+
         setUser(response);
         setIsLoggedIn(true);
         setTimeout(() => {
