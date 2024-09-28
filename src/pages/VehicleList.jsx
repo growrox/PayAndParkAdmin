@@ -80,14 +80,14 @@ const GetVehicle = () => {
       title: "Image",
       dataIndex: "image",
       key: "image",
-      width: 100,
+      width: 200,
       render: (url) => <Image src={url} height={"150px"} width={"150px"} />,
     },
     {
       title: "Hourly Prices With GST",
       dataIndex: "hourlyPrices", // Check if this should be "name"
       key: "hourlyPrices", // Matching with the key in the data object
-      width: 70,
+      width: 200,
       render: (hourlyPrices) => {
         return (
           <>
@@ -126,7 +126,7 @@ const GetVehicle = () => {
           </Popconfirm>
         </Flex>
       ),
-      width: 40,
+      width: 100,
     },
   ];
 
@@ -161,7 +161,7 @@ const GetVehicle = () => {
           dataSource={vehicleList}
           size="small"
           loading={isLoading}
-          scroll={{ x: 350, y: 800 }}
+          scroll={{ x: 350, y: 500 }}
           pagination={true}
         />
       </Card>

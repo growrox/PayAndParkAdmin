@@ -224,7 +224,7 @@ const GetUser = () => {
       width: 100,
     },
     {
-      title: "Shit",
+      title: "Shift",
       dataIndex: "shift",
       key: "shift",
       width: 150,
@@ -267,7 +267,7 @@ const GetUser = () => {
           dataSource={userList}
           size="small"
           loading={isLoading}
-          scroll={{ x: 350, y: 800 }}
+          scroll={{ x: 350, y: 500 }}
           pagination={false}
         />
         <Pagination

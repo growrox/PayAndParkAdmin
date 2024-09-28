@@ -137,6 +137,12 @@ const SettledTicketsTable = () => {
     // },
     ...(role === "supervisor"
       ? [
+        {
+          title: "Created At",
+          dataIndex: "createdAt",
+          key: "createdAt",
+          width: 150,
+        },
           {
             title: "Parking Assitant",
             dataIndex: "parkingAssistantName",
@@ -191,12 +197,7 @@ const SettledTicketsTable = () => {
             width: 150,
           },
 
-          {
-            title: "Created At",
-            dataIndex: "createdAt",
-            key: "createdAt",
-            width: 150,
-          },
+       
         ]
       : [
           {
@@ -303,7 +304,7 @@ const SettledTicketsTable = () => {
         columns={columns}
         pagination={false}
         rowKey="_id"
-        scroll={{ x: 350, y: 800 }}
+        scroll={{ x: 350, y:600 }}
       />
       <Pagination
         size="small"

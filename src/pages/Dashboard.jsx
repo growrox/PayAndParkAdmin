@@ -111,7 +111,7 @@ const Dashboard = () => {
               }
             >
               <Card
-                title="Total Collection Report"
+                title="Current Month Total Collection Report"
                 style={{ marginBottom: "1rem" }}
               >
                 <Row

@@ -411,7 +411,7 @@ const TicketList = () => {
             <Card bordered={false} style={{ marginBottom: "0.5rem" }}>
               <Statistic
                 title="Total Collection"
-                value={amountTotal.cash + amountTotal.online}
+                value={amountTotal.cash + amountTotal.online + amountTotal.pass}
                 precision={0}
                 valueStyle={{ color: "#3f8600" }}
                 suffix="₹"
@@ -421,7 +421,7 @@ const TicketList = () => {
           <Col xs={24} sm={12} md={8} lg={8}>
             <Card bordered={false} style={{ marginBottom: "0.5rem" }}>
               <Statistic
-                title="Cash Collection"
+                title="Cash Tickets Collection"
                 value={amountTotal.cash}
                 precision={0}
                 valueStyle={{ color: "#3f8600" }}
@@ -433,11 +433,23 @@ const TicketList = () => {
           <Col xs={24} sm={12} md={8} lg={8}>
             <Card bordered={false} style={{ marginBottom: "0.5rem" }}>
               <Statistic
-                title="Online Collection"
+                title="Online Tickets Collection"
                 value={amountTotal.online}
                 precision={0}
                 valueStyle={{ color: "#3f8600" }}
                 prefix={amountTotal.online > 0 ? <ArrowUpOutlined /> : <></>}
+                suffix="₹"
+              />
+            </Card>
+          </Col>
+          <Col xs={24} sm={12} md={8} lg={8}>
+            <Card bordered={false} style={{ marginBottom: "0.5rem" }}>
+              <Statistic
+                title="Pass Collection"
+                value={amountTotal.pass}
+                precision={0}
+                valueStyle={{ color: "#3f8600" }}
+                prefix={amountTotal.pass > 0 ? <ArrowUpOutlined /> : <></>}
                 suffix="₹"
               />
             </Card>
@@ -513,7 +525,7 @@ const TicketList = () => {
           dataSource={ticketList}
           loading={isLoading}
           pagination={false}
-          scroll={{ y: 500 }}
+          scroll={{ x: 350, y: 400 }}
         />
         <Pagination
           current={pagination.current}
