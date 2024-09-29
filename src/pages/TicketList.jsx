@@ -73,6 +73,12 @@ const TicketList = () => {
     setIsLoading(true);
     try {
       const [startDate, endDate] = dateRange;
+      const formattedStartDate = startDate
+        ? new Date(startDate).toLocaleDateString()
+        : "";
+      const formattedEndDate = endDate
+        ? new Date(endDate).toLocaleDateString()
+        : "";
 
       if (!ticketType) {
         const { totalCount, parkingTickets } = await sendRequest({
@@ -98,27 +104,25 @@ const TicketList = () => {
         const { totalCount, parkingTickets } = await sendRequest({
           url: `${
             import.meta.env.VITE_BACKEND_URL
-          }${GET_ALL}?page=${page}&limit=${limit}&search=${searchText}&isPass=${isPass}`,
+          }${GET_ALL}?page=${page}&limit=${limit}&search=${searchText}&isPass=${isPass}&startDate=${formattedStartDate}&endDate=${formattedEndDate}`,
           method: "POST",
           showNotification: false,
           data: {
             supervisors,
             assistants,
-            startDate,
-            endDate,
           },
         });
+        console.log({ totalCount, parkingTickets });
+
         const total = await sendRequest({
           url: `${
             import.meta.env.VITE_BACKEND_URL
-          }${GET_ALL_TICKETS_AMOUNT_TOTAL}?page=${page}&limit=${limit}&search=${searchText}`,
+          }${GET_ALL_TICKETS_AMOUNT_TOTAL}?page=${page}&limit=${limit}&search=${searchText}&startDate=${formattedStartDate}&endDate=${formattedEndDate}`,
           method: "POST",
           showNotification: false,
           data: {
             supervisors,
             assistants,
-            startDate,
-            endDate,
           },
         });
         console.log({ total });
@@ -390,10 +394,7 @@ const TicketList = () => {
   ];
   const handleDateChange = (dates) => {
     if (dates && dates.length === 2) {
-      setDateRange([
-        dates[0].startOf("day"), // Ensure the start date is at the beginning of the day
-        dates[1].endOf("day"), // Ensure the end date is at the end of the day
-      ]);
+      setDateRange(dates);
     } else {
       setDateRange([]);
     }

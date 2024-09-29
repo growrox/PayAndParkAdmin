@@ -61,17 +61,17 @@
 /* .ant-picker-calendar-date-value{
   display: none;
 } */
-.ant-picker-calendar-header > div:nth-child(3){
+.ant-picker-calendar-header > div:nth-child(3) {
   display: none;
 }
 .custom-calendar .ant-picker-panel-container {
   height: auto;
 }
-.ant-picker-calendar{
+.ant-picker-calendar {
   height: 95%;
 }
 
-.ant-picker-calendar-date-content{
+.ant-picker-calendar-date-content {
   height: 60px !important;
 }
 .custom-calendar .ant-picker-calendar {
@@ -96,6 +96,11 @@
   margin-right: 8px;
 }
 
+@media (max-width: 576px) {
+  .ant-picker-panels {
+    flex-direction: column;
+  }
+}
 
 /* .custom-calendar .cell {
   display: flex;

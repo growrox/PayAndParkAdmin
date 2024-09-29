@@ -9,6 +9,7 @@ import ParkingTicketSiteChart from "../components/charts/ParkingTicketSiteChart"
 import moment from "moment";
 import useApiRequest from "../components/common/useApiRequest";
 import { ROUTES } from "../utils/routes";
+import { MONTHS } from "../utils/helperConstant";
 const { RangePicker } = DatePicker;
 
 const Dashboard = () => {
@@ -40,26 +41,34 @@ const Dashboard = () => {
   const [totalNoOfOnlineUsers, setTotalNoOfOnlineUsers] = useState(0);
 
   const handleDateChange = (dates) => {
+    console.log({ dates });
+
     if (dates && dates.length === 2) {
-      setDateRange([
-        dates[0].startOf("day"), // Ensure the start date is at the beginning of the day
-        dates[1].endOf("day"), // Ensure the end date is at the end of the day
-      ]);
+      setDateRange(dates);
     }
   };
+
   useEffect(() => {
     const fetchData = async () => {
       try {
         setIsLoading(true);
+
         const [startDate, endDate] = dateRange;
+
+        const formattedStartDate = startDate
+          ? new Date(startDate).toLocaleDateString()
+          : "";
+        const formattedEndDate = endDate
+          ? new Date(endDate).toLocaleDateString()
+          : "";
+
         const response = await sendRequest({
           url: `${
             import.meta.env.VITE_BACKEND_URL
-          }${GET_PARKING_TICKETS_IN_DATE_RANGE}?startDate=${startDate?.toISOString()}&endDate=${endDate?.toISOString()}`,
+          }${GET_PARKING_TICKETS_IN_DATE_RANGE}?startDate=${formattedStartDate}&endDate=${formattedEndDate}`,
           method: "GET",
           showNotification: false,
         });
-        console.log({ response });
 
         setTotalCollection(response?.totals);
         setTodayCollection(response?.todayTotal);
@@ -72,8 +81,12 @@ const Dashboard = () => {
         setIsLoading(false);
       }
     };
+
     fetchData();
   }, [dateRange]);
+
+  console.log({ dateRange, startDate: new Date(dateRange[0]).getMonth() });
+
   return (
     <div>
       <div>
@@ -111,7 +124,9 @@ const Dashboard = () => {
               }
             >
               <Card
-                title="Current Month Total Collection Report"
+                title={` ${
+                  MONTHS[new Date(dateRange[0]).getMonth() || 0]
+                }  Month Total Collection Report`}
                 style={{ marginBottom: "1rem" }}
               >
                 <Row
