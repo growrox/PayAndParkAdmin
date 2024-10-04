@@ -16,6 +16,7 @@ import {
   Checkbox,
   Switch,
   Select,
+  Divider,
 } from "antd";
 import { Outlet } from "react-router-dom";
 import useApiRequest from "../components/common/useApiRequest";
@@ -112,8 +113,6 @@ const TicketList = () => {
             assistants,
           },
         });
-        console.log({ totalCount, parkingTickets });
-
         const total = await sendRequest({
           url: `${
             import.meta.env.VITE_BACKEND_URL
@@ -125,7 +124,6 @@ const TicketList = () => {
             assistants,
           },
         });
-        console.log({ total });
 
         setAmountTotal(total);
         const ticketsWithSerial = parkingTickets.map((ticket, index) => ({
@@ -399,7 +397,6 @@ const TicketList = () => {
       setDateRange([]);
     }
   };
-  console.log({ ticketType });
   const handleTicketType = (value) => {
     setIsPass(value);
   };
@@ -411,8 +408,8 @@ const TicketList = () => {
           <Col xs={24} sm={12} md={8} lg={8}>
             <Card bordered={false} style={{ marginBottom: "0.5rem" }}>
               <Statistic
-                title="Total Collection"
-                value={amountTotal.cash + amountTotal.online + amountTotal.pass}
+                title="Total Tickets Collection"
+                value={amountTotal.cash + amountTotal.online}
                 precision={0}
                 valueStyle={{ color: "#3f8600" }}
                 suffix="₹"
@@ -422,7 +419,7 @@ const TicketList = () => {
           <Col xs={24} sm={12} md={8} lg={8}>
             <Card bordered={false} style={{ marginBottom: "0.5rem" }}>
               <Statistic
-                title="Cash Tickets Collection"
+                title="Tickets Cash Collection"
                 value={amountTotal.cash}
                 precision={0}
                 valueStyle={{ color: "#3f8600" }}
@@ -434,7 +431,7 @@ const TicketList = () => {
           <Col xs={24} sm={12} md={8} lg={8}>
             <Card bordered={false} style={{ marginBottom: "0.5rem" }}>
               <Statistic
-                title="Online Tickets Collection"
+                title="Tickets Online Collection"
                 value={amountTotal.online}
                 precision={0}
                 valueStyle={{ color: "#3f8600" }}
@@ -446,11 +443,53 @@ const TicketList = () => {
           <Col xs={24} sm={12} md={8} lg={8}>
             <Card bordered={false} style={{ marginBottom: "0.5rem" }}>
               <Statistic
-                title="Pass Collection"
-                value={amountTotal.pass}
+                title="Pass Total Collection"
+                value={amountTotal.passOnline + amountTotal.passOnline}
                 precision={0}
                 valueStyle={{ color: "#3f8600" }}
                 prefix={amountTotal.pass > 0 ? <ArrowUpOutlined /> : <></>}
+                suffix="₹"
+              />
+            </Card>
+          </Col>
+          <Col xs={24} sm={12} md={8} lg={8}>
+            <Card bordered={false} style={{ marginBottom: "0.5rem" }}>
+              <Statistic
+                title="Pass Cash Collection"
+                value={amountTotal.passCash}
+                precision={0}
+                valueStyle={{ color: "#3f8600" }}
+                prefix={amountTotal.pass > 0 ? <ArrowUpOutlined /> : <></>}
+                suffix="₹"
+              />
+            </Card>
+          </Col>
+          <Col xs={24} sm={12} md={8} lg={8}>
+            <Card bordered={false} style={{ marginBottom: "0.5rem" }}>
+              <Statistic
+                title="Pass Online Collection"
+                value={amountTotal.passOnline}
+                precision={0}
+                valueStyle={{ color: "#3f8600" }}
+                prefix={amountTotal.pass > 0 ? <ArrowUpOutlined /> : <></>}
+                suffix="₹"
+              />
+            </Card>
+          </Col>
+          <Divider />
+
+          <Col xs={24} sm={12} md={8} lg={8}>
+            <Card bordered={false} style={{ marginBottom: "0.5rem" }}>
+              <Statistic
+                title="Total Collection"
+                value={
+                  amountTotal.cash +
+                  amountTotal.online +
+                  amountTotal.passCash +
+                  amountTotal.passOnline
+                }
+                precision={0}
+                valueStyle={{ color: "#3f8600" }}
                 suffix="₹"
               />
             </Card>

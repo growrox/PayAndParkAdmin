@@ -24,10 +24,17 @@ const DownloadReport = ({
   const handleDownload = async () => {
     try {
       setIsLoading(true);
+
+      const formattedStartDate = startDate
+        ? new Date(startDate).toLocaleDateString()
+        : "";
+      const formattedEndDate = endDate
+        ? new Date(endDate).toLocaleDateString()
+        : "";
       const response = await axios({
         url: `${
           import.meta.env.VITE_BACKEND_URL
-        }${GET_ALL}?search=${searchText}&exportFormat=${format}&isPass=${isPass}`,
+        }${GET_ALL}?search=${searchText}&exportFormat=${format}&isPass=${isPass}&startDate=${formattedStartDate}&endDate=${formattedEndDate}`,
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -39,8 +46,6 @@ const DownloadReport = ({
         data: {
           supervisors,
           assistants,
-          startDate,
-          endDate,
         },
         withCredentials: true,
       });
