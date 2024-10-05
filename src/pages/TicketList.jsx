@@ -44,7 +44,8 @@ const TicketList = () => {
     cash: 0,
     online: 0,
     free: 0,
-    pass: 0,
+    passOnline: 0,
+    passCash: 0,
   });
 
   const {
@@ -444,7 +445,7 @@ const TicketList = () => {
             <Card bordered={false} style={{ marginBottom: "0.5rem" }}>
               <Statistic
                 title="Pass Total Collection"
-                value={amountTotal.passOnline + amountTotal.passOnline}
+                value={amountTotal.passOnline + amountTotal.passCash}
                 precision={0}
                 valueStyle={{ color: "#3f8600" }}
                 prefix={amountTotal.pass > 0 ? <ArrowUpOutlined /> : <></>}
@@ -519,6 +520,7 @@ const TicketList = () => {
               format="YYYY-MM-DD"
               allowClear={true} // Prevent clearing of date range to ensure consistency
               style={{ width: "100%" }}
+              // defaultValue={dateRange}
             />
           </Col>
           <Col xs={24} sm={12} md={8} lg={8}>

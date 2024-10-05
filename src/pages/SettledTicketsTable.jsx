@@ -31,6 +31,7 @@ const SettledTicketsTable = () => {
   const [totalCollected, setTotalCollected] = useState(0);
   const [totalFine, setTotalFine] = useState(0);
   const [totalReward, setTotalReward] = useState(0);
+  const [onlineCollection, setOnlineCollection] = useState(0);
   const {
     SUPERVISOR: { GET_SETTLED_TICKETS: SUPERVISOR },
     ACCOUNTANT: { GET_SETTLED_TICKETS: ACCOUNTANT },
@@ -63,6 +64,7 @@ const SettledTicketsTable = () => {
           totalCollection,
           totalFine,
           totalReward,
+          totalOnlineCollection
         },
       } = await sendRequest({
         url: `${import.meta.env.VITE_BACKEND_URL}${
@@ -92,6 +94,7 @@ const SettledTicketsTable = () => {
         setTotalCollected(totalCollectedAmount);
         setTotalReward(totalReward);
         setTotalFine(totalFine);
+        setOnlineCollection(totalOnlineCollection);
       }
     } catch (err) {
       console.log({ error });
@@ -100,6 +103,7 @@ const SettledTicketsTable = () => {
       setTotalCollected(0);
       setTotalReward(0);
       setTotalFine(0);
+      setOnlineCollection(0);
     } finally {
       setLoading(false);
     }
@@ -137,12 +141,12 @@ const SettledTicketsTable = () => {
     // },
     ...(role === "supervisor"
       ? [
-        {
-          title: "Created At",
-          dataIndex: "createdAt",
-          key: "createdAt",
-          width: 150,
-        },
+          {
+            title: "Created At",
+            dataIndex: "createdAt",
+            key: "createdAt",
+            width: 150,
+          },
           {
             title: "Parking Assitant",
             dataIndex: "parkingAssistantName",
@@ -196,8 +200,6 @@ const SettledTicketsTable = () => {
             render: () => <Tag color="green">Settled</Tag>,
             width: 150,
           },
-
-       
         ]
       : [
           {
@@ -275,6 +277,20 @@ const SettledTicketsTable = () => {
           <>
             <Card bordered={false}>
               <Statistic
+                valueStyle={{ color: "#3f8600" }}
+                title="Total Online Collection"
+                value={onlineCollection}
+              />
+            </Card>
+            <Card bordered={false}>
+              <Statistic
+                valueStyle={{ color: "#3f8600" }}
+                title="Total Cash Collected"
+                value={totalCollected}
+              />
+            </Card>
+            <Card bordered={false}>
+              <Statistic
                 valueStyle={{ color: "#f8a81a" }}
                 title="Total Reward"
                 value={totalReward}
@@ -287,13 +303,6 @@ const SettledTicketsTable = () => {
                 value={totalFine}
               />
             </Card>
-            <Card bordered={false}>
-              <Statistic
-                valueStyle={{ color: "#3f8600" }}
-                title="Total Cash Collected"
-                value={totalCollected}
-              />
-            </Card>
           </>
         ) : (
           <></>
@@ -304,7 +313,7 @@ const SettledTicketsTable = () => {
         columns={columns}
         pagination={false}
         rowKey="_id"
-        scroll={{ x: 350, y:600 }}
+        scroll={{ x: 350, y: 600 }}
       />
       <Pagination
         size="small"
