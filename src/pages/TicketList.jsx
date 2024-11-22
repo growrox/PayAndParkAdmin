@@ -186,7 +186,7 @@ const TicketList = () => {
         showNotification: true,
         data: {},
       });
-      getTicketList(pagination.current, pagination.limit, searchText);
+      getTicketList(pagination.current, pagination.limit, searchText, supervisors, assitants);
     } catch (error) {
       console.error(error);
     } finally {
@@ -195,7 +195,7 @@ const TicketList = () => {
   };
 
   useEffect(() => {
-    getTicketList(pagination.current, pagination.limit, searchText);
+    getTicketList(pagination.current, pagination.limit, searchText, supervisors, assitants);
   }, [
     pagination.current,
     pagination.limit,
