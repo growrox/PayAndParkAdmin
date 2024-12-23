@@ -30,12 +30,14 @@ const { Search } = Input;
 const { RangePicker } = DatePicker;
 
 const TicketList = () => {
+  const today = moment(); // Today's date
+  const oneMonthFromToday = moment().subtract(1, "month");
   const { sendRequest } = useApiRequest();
   const [isLoading, setIsLoading] = useState(false);
   const [ticketList, setTicketList] = useState([]);
   const [searchText, setSearchText] = useState("");
   const [addresses, setAddresses] = useState({});
-  const [dateRange, setDateRange] = useState([]);
+  const [dateRange, setDateRange] = useState([oneMonthFromToday, today]);
   const [assitants, setAssistants] = useState([]);
   const [supervisors, setSupervisors] = useState([]);
   const [ticketType, setTicketType] = useState(true);
@@ -186,7 +188,13 @@ const TicketList = () => {
         showNotification: true,
         data: {},
       });
-      getTicketList(pagination.current, pagination.limit, searchText, supervisors, assitants);
+      getTicketList(
+        pagination.current,
+        pagination.limit,
+        searchText,
+        supervisors,
+        assitants
+      );
     } catch (error) {
       console.error(error);
     } finally {
@@ -195,7 +203,13 @@ const TicketList = () => {
   };
 
   useEffect(() => {
-    getTicketList(pagination.current, pagination.limit, searchText, supervisors, assitants);
+    getTicketList(
+      pagination.current,
+      pagination.limit,
+      searchText,
+      supervisors,
+      assitants
+    );
   }, [
     pagination.current,
     pagination.limit,
@@ -520,7 +534,6 @@ const TicketList = () => {
               format="YYYY-MM-DD"
               allowClear={true} // Prevent clearing of date range to ensure consistency
               style={{ width: "100%" }}
-              // defaultValue={dateRange}
             />
           </Col>
           <Col xs={24} sm={12} md={8} lg={8}>
