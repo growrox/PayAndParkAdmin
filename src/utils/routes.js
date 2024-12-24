@@ -7,7 +7,8 @@ export const ROUTES = {
     GET_SUPERVISOR_WITH_ASSISTANT: "/api/v1/supervisors-with-assistants",
     VERIFY_OTP: "/api/v1/verify-otp",
     FORGOT_PASSWORD: "/api/v1/user/forgot-password",
-    UPDATE_PASSWORD: "/api/v1/user/update-password"
+    UPDATE_PASSWORD: "/api/v1/user/update-password",
+    DISABLE_USER: "/api/v1/user-disable",
   },
   VEHICLE_TYPE: {
     CREATE: "/api/v1/create-vehicle-type",

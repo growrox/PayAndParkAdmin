@@ -10,12 +10,15 @@ import {
   Tag,
   Tooltip,
   Flex,
+  Popconfirm,
+  message,
 } from "antd";
 import { Outlet, useNavigate } from "react-router-dom";
 import {
   EditOutlined,
   ReconciliationOutlined,
   DatabaseOutlined,
+  UserDeleteOutlined,
 } from "@ant-design/icons";
 import useApiRequest from "../components/common/useApiRequest";
 import { ROUTES } from "../utils/routes";
@@ -35,7 +38,7 @@ const GetUser = () => {
   const [visible, setVisible] = useState(false);
   const navigate = useNavigate();
   const {
-    USER: { GET_ALL },
+    USER: { GET_ALL, DISABLE_USER },
     SHIFT: { GET },
   } = ROUTES;
 
@@ -133,6 +136,31 @@ const GetUser = () => {
     setSelectedRole(value);
   };
 
+  const confirm = async (id) => {
+    console.log({ id });
+    const { disableUser } = await sendRequest({
+      url: `${import.meta.env.VITE_BACKEND_URL}${DISABLE_USER}/${id}`,
+      method: "DELETE",
+      showNotification: false,
+      data: {},
+    });
+    console.log({ disableUser });
+
+    if (Object.keys(disableUser).length > 0) {
+      message.success("User Disabled Successfully");
+      getUserList(
+        pagination.current,
+        pagination.pageSize,
+        searchText,
+        selectedRole
+      );
+    }
+  };
+  const cancel = (e) => {
+    console.log(e);
+    message.error("Click on No");
+  };
+
   const columns = [
     {
       title: "Sr No.",
@@ -152,6 +180,23 @@ const GetUser = () => {
               onClick={() => handleUserUpdateModal(_)}
             />
           </Tooltip>
+
+          <Popconfirm
+            title="Disable the User"
+            description="Are you sure to Disable this user?"
+            onConfirm={() => confirm(_._id)}
+            onCancel={cancel}
+            okText="Yes"
+            cancelText="No"
+          >
+            <Tooltip title="Edit User">
+              <UserDeleteOutlined
+                style={{ fontSize: "18px", color: "#f8a81a" }}
+              />
+            </Tooltip>
+            {/* <Button danger>Delete</Button> */}
+          </Popconfirm>
+
           {_.role === "accountant" || _.role === "supervisor" ? (
             <Tooltip title="Settled Tickets">
               <ReconciliationOutlined
@@ -213,6 +258,21 @@ const GetUser = () => {
             </>
           ) : (
             <Tag color="yellow">No Attendance</Tag>
+          )}
+        </Space>
+      ),
+    },
+    {
+      title: "User Disab;e",
+      dataIndex: "isUserDisable", // Check if this should be "name"
+      key: "isUserDisable", // Matching with the key in the data object
+      width: 150,
+      render: (isUserDisable, _) => (
+        <Space>
+          {isUserDisable ? (
+            <Tag color="red">Disable</Tag>
+          ) : (
+            <Tag color="green">Enable</Tag>
           )}
         </Space>
       ),
