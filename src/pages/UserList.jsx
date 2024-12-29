@@ -136,13 +136,15 @@ const GetUser = () => {
     setSelectedRole(value);
   };
 
-  const confirm = async (id) => {
+  const confirm = async (id, isUserDisable) => {
     console.log({ id });
     const { disableUser } = await sendRequest({
       url: `${import.meta.env.VITE_BACKEND_URL}${DISABLE_USER}/${id}`,
       method: "DELETE",
       showNotification: false,
-      data: {},
+      data: {
+        isUserDisable: isUserDisable,
+      },
     });
     console.log({ disableUser });
 
@@ -183,13 +185,15 @@ const GetUser = () => {
 
           <Popconfirm
             title="Disable the User"
-            description="Are you sure to Disable this user?"
-            onConfirm={() => confirm(_._id)}
+            description={`Are you sure to ${
+              !_.isUserDisable ? "Disable" : "Enable"
+            } this user?`}
+            onConfirm={() => confirm(_._id, !_.isUserDisable)}
             onCancel={cancel}
             okText="Yes"
             cancelText="No"
           >
-            <Tooltip title="Edit User">
+            <Tooltip title="Disable the User">
               <UserDeleteOutlined
                 style={{ fontSize: "18px", color: "#f8a81a" }}
               />
